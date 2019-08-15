@@ -1,0 +1,527 @@
+\documentclass{article}
+\usepackage[T1]{fontenc}
+\usepackage{amssymb, amsmath, graphicx, subfigure, enumerate}
+\usepackage{amsthm,alltt} 
+\usepackage[margin=1.25in]{geometry} %geometry (sets margin) and other useful packages
+\usepackage{graphicx,ctable,booktabs}
+\usepackage{mathtools}
+\usepackage[boxed]{algorithm2e}
+\usepackage{mathdots}
+\usepackage{fancyhdr} %Fancy-header package to modify header/page numbering
+\usepackage{cleveref}
+
+\setlength{\oddsidemargin}{.25in}
+\setlength{\evensidemargin}{.25in}
+\setlength{\textwidth}{6in}
+\setlength{\topmargin}{-0.4in}
+\setlength{\textheight}{8.5in}
+
+\newcommand{\heading}[6]{
+  \renewcommand{\thepage}{\arabic{page}} % used to be #1-\arabic{page}
+  \noindent
+  \begin{center}
+  \framebox{
+    \vbox{
+      \hbox to 5.78in { \textbf{#2} \hfill #3 }
+      \vspace{4mm}
+      \hbox to 5.78in { {\Large \hfill #6  \hfill} }
+      \vspace{2mm}
+      \hbox to 5.78in { \textit{Instructor: #4 \hfill #5} }
+    }
+  }
+  \end{center}
+  \vspace*{4mm}
+}
+
+%Redefining sections as problems
+\makeatletter
+\newenvironment{problem}{\@startsection
+       {section}
+       {2}
+       {-.2em}
+       {-3.5ex plus -1ex minus -.2ex}
+       {2.3ex plus .2ex}
+       {\pagebreak[3]%forces pagebreak when space is small; use \eject for better results
+       \large\bf\noindent{Problem }
+       }
+       }
+       %{%\vspace{1ex}\begin{center} \rule{0.3\linewidth}{.3pt}\end{center}}
+       %\begin{center}\large\bf \ldots\ldots\ldots\end{center}}
+\makeatother
+
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{claim}[theorem]{Claim}
+\newtheorem{observation}[theorem]{Observation}
+\newtheorem{fact}[theorem]{Fact}
+\newtheorem{assumption}[theorem]{Assumption}
+
+% don't modify this unless you know what you're doing
+\newcommand{\problemset}[3]{\heading{#1}{\classname: Machine Learning Theory}{#2}{Jake Abernethy}{#3}{Problem Set #1}}
+
+
+%%%%%%%% ENTER YOUR INFORMATION HERE %%%%%%%%
+\newcommand{\problemsetnum}{4}            % problem set number
+\newcommand{\duedate}{November 16, 2018} % problem set deadline
+\newcommand{\studentname}{Adrien Saremi}      % name of student (i.e., you)
+\newcommand{\classname}{CS 7545}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\pagestyle{fancy}
+%\addtolength{\headwidth}{\marginparsep} %these change header-rule width
+%\addtolength{\headwidth}{\marginparwidth}
+\lhead{\classname} %Problem \thesection}
+\chead{} 
+\rhead{\thepage} 
+\lfoot{\small\scshape \classname}
+\cfoot{} 
+\rfoot{\footnotesize PS \#\problemsetnum} 
+\renewcommand{\headrulewidth}{.3pt} 
+\renewcommand{\footrulewidth}{.3pt}
+\setlength\voffset{-0.25in}
+\setlength\textheight{648pt}
+
+
+\newcommand{\sit}{\shortintertext}
+\newcommand\deq{\mathrel{\overset{\makebox[0pt]{\mbox{\normalfont\tiny\sffamily def}}}{=}}}
+\newcommand{\ones}{\mathbbm{1}}
+\newcommand{\e}{\vec{e}}
+\newcommand{\tr}{\text{tr}}
+\newcommand{\bs}{\boldsymbol}
+\mathchardef\mhyphen="2D
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\R}{\mathbb{R}}
+
+\newcommand{\vol}{\text{vol}}
+
+\renewcommand{\thesubsection}{\thesection.\alph{subsection}}
+
+
+% auto sized delimiters
+
+\newcommand{\br}[1]{\left[#1\right]}
+\newcommand{\pr}[1]{\left(#1\right)}
+\newcommand{\ceil}[1]{\left\lceil#1\right\rceil}
+\newcommand{\floor}[1]{\left\lfloor#1\right\rfloor}
+\newcommand{\abs}[1]{\left|#1\right|}
+
+%default delimiter for Pr and E
+\DeclarePairedDelimiter{\defaultDelim}{[}{]}
+
+\DeclareMathOperator{\capPr}{Pr}
+\renewcommand{\Pr}[2][]{\capPr_{#1}\defaultDelim*{#2}}
+\DeclareMathOperator{\capE}{E}
+\newcommand{\E}[2][]{\capE_{#1}\defaultDelim*{#2}}
+\DeclareMathOperator{\capVar}{Var}
+\newcommand{\Var}[2][]{\capVar_{#1}\defaultDelim*{#2}}
+
+
+
+
+
+
+
+
+
+
+%\DeclareMathOperator*{}{} puts subscript below
+
+\usepackage{dsfont}
+
+\renewcommand{\leq}{\leqslant}
+\renewcommand{\geq}{\geqslant}
+\setlength\parindent{0pt}
+\newcommand{\nn}{\nonumber}
+\def\R{\mathbb{R}}
+
+\newcommand\undersign[2]{\mathrel{\mathop{#2}\limits_{#1}}}
+
+\newcommand {\gr}[1] {\nabla f(#1)}
+
+\def \Pr {\text{Pr}}
+
+\def \brl {\langle}
+\def \brr {\rangle}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+\problemset{\problemsetnum}{\duedate}{\studentname}
+
+\textit{This work has been done in collaboration with \underline{Bhavesh Khamesra}}
+
+\begin{problem}{}
+
+The regret is defined as:
+
+\[
+E[R_T] = E \big[ \mu* T - \sum_{t=1}^T \mu_{i_t} \big]
+\]
+
+And for \textbf{algorithm 1}, assume $\mu* = \mu_1$. We could make the other assumption ($\mu* = \mu_2$), but we'll limit this study to this scenario and keep in mind that the indices $1$ and $2$ are interchangeables:
+
+\begin{align}
+E [R_T] &= E \Big[ \mu_1 T - \sum_{t=1}^n \mu_{i_t} - \sum_{t=n+1}^{2n} \mu_{i_t} - \sum_{t=2n+1}^T \mu_{i_t} \Big] 
+\nonumber \\
+&= E \Big[ n \mu_1 + n \mu_1 + (T - 2n) \mu_1 -  \sum_{t=1}^n \mu_{1} - \sum_{t=n+1}^{2n} \mu_{2} - \sum_{t=2n+1}^T \mu_{i_t} \Big]
+\nonumber \\
+&= E \Big[ n \mu_1 + n \mu_1 + (T - 2n) \mu_1 -  n \mu_{1} - n \mu_{2} - \sum_{t=2n+1}^T \mu_{i_t} \Big]
+\nonumber \\
+&= n(\mu_1 - \mu_2) + E \Big[ \sum_{t=2n+1}^T \mu_1 - \mu_{i_t} \Big]
+\end{align}
+
+\noindent
+In (1), for the second term, since $\mu_1 \geq \mu_{i_t}$ and $\mu_{i_t} \in [0,1] \: \forall t$, we have:
+
+\begin{align}
+\mu_1 - \mu_{i_t}  &\leq \mathds{1}_{i* \neq i_t}
+\nonumber \\
+\rightarrow E \Big[ \sum_{t=2n+1}^T \mu_1 - \mu_{i_t} \Big] &\leq \sum_{t = 2n + 1}^T \Pr \Big( i* \neq i_t \Big) \: \Big( \Pr(\text{argmax is wrong}) \Big)
+\nonumber \\
+& \leq  \sum_{t = 2n + 1}^T \Pr \Big(\frac{1}{n} \sum_{t = n+1}^{2n} x_2^t \geq \frac{1}{n} \sum_{t = 1}^{n} x_1^t \Big)
+\nonumber \\
+& \leq  \sum_{t = 2n + 1}^T \Pr \Big(\frac{1}{n} \sum_{t = n+1}^{2n} (x_2^t  - \mu_2) - \frac{1}{n} \sum_{t = 1}^{n} (x_1^t - \mu_1 ) \geq n(\mu_1 - \mu_2) \Big)
+\nonumber
+\end{align}
+
+\noindent
+
+Let's define the RV $Z^t$ such that $z^t = x_1^t - \mu_1 \text{ for } 1 \leq t \leq n$ and $z^t = x_2^t - \mu_2 \text{ for } n+1 \leq t \leq 2n$. Then, the R.Vs $Z^t$ have expected value 0, are bounded within $0$ and $1$ and are i.i.d, therefore we can apply Hoeffding's inequality to sum $\frac{1}{2n} \sum Z^t$:
+
+\begin{align}
+E \Big[ \sum_{t=2n+1}^T \mu_1 - \mu_{i_t} \Big] &\leq \sum_{t = 2n + 1}^T \Pr \Big( \frac{1}{2n} \sum Z^t \geq n(\mu_1 - \mu_2) \Big)
+\nonumber \\
+&\leq \sum_{t = 2n + 1}^T \exp \big( -2 \frac{(n(\mu_1 - \mu_2))^2}{2n}  \big)
+\nonumber \\
+&\leq \sum_{t = 2n + 1}^T \exp \big( -n(\mu_1 - \mu_2)^2 \big)
+\nonumber \\
+&= (T - 2n) \exp \big( -n(\mu_1 - \mu_2)^2 \big)
+\end{align}
+
+\noindent
+Before substituting back into (1), let's define $n = \frac{\log(1/\delta)}{(\mu_1 - \mu_2)^2}$ so that $$\exp \big( -n(\mu_1 - \mu_2)^2 \big) = \exp (- \log(1/\delta) ) = \delta,$$ \noindent and define $1/ \delta = T$. Then, we have:
+
+\begin{align}
+E[R_T] &\leq (\mu_1 - \mu_2) n + (T - 2n) \delta 
+\nonumber \\
+& \leq \frac{\log(T)}{(\mu_1 - \mu_2)^2} (\mu_1 - \mu_2) + \frac{1}{T} \Big(T - 2 \frac{\log(T)}{(\mu_1 - \mu_2)^2} \Big)
+\nonumber \\
+& \leq  \frac{\log(T)}{\mu_1 - \mu_2} + 1 - \frac{2}{T} \frac{\log(T)}{(\mu_1 - \mu_2)^2}
+\nonumber
+\end{align}
+
+\noindent
+We can choose to ignore the last term, and by generalizing our assumption $\mu* = \mu_1$, hence we get:
+\begin{align}
+E[R_T] & \leq 1 + \frac{\log(T)}{|\mu_1 - \mu_2|}
+\end{align}
+
+\end{problem}{}
+
+%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%
+
+\newpage
+
+\begin{problem}{}
+
+In this problem, we must consider \textbf{algorithm 2} instead. 
+\bigskip
+
+It is worth noting in the algorithm, that once the intervals defined are disjoint, i.e. $\exists s$ such that $[LCB_1^s, UCB_1^s] \cap [LCB_2^s, UCB_2^s] \neq \varnothing$ but $[LCB_1^{s+1}, UCB_1^{s+1}] \cap [LCB_2^{s+1}, UCB_2^{s+1}] = \varnothing$ then the intervals will still be disjoint throughout the rest of the algorithm.
+
+Beside from that, the definition of the regret is still the same and we make the same assumption as in \underline{problem 1}, that is $\mu^* = \mu_1$:
+
+\begin{align}
+E[R_T] &= E \big[ \mu^* T - \sum_{i=1}^T \mu_{i_t} \big]
+\nonumber \\
+&= E \big[ \mu_1 T - \sum_{i=1}^T \mu_{i_t} \big]
+\end{align}
+
+Define the event good $G$ as: $\Big\{ |\hat{\mu}_i^t - \mu_i | \leq \sqrt{\frac{2 \log T}{N_i^t}} \: \forall t \in \{1, ..., T \} \: \text{ for } i = 1, 2 \Big\}$. Let's define the false event $F$ as its compliment:
+
+\[
+F = \Big\{\exists t \in \{1, ..., T \} \text{ such that } |\hat{\mu}_i^t - \mu_i | > \sqrt{\frac{2 \log T}{N_i^t}} \text{ for one of the two arms} \Big\}
+\]
+
+Then:
+
+\begin{align}
+E[ R_T ] = E[ R_T | G] \Pr(G) + E [ R_T | F] \Pr (F)
+\end{align}
+
+\begin{itemize}
+\item
+\underline{Assuming $G$ holds true}, then the algorithm runs given the first hypothesis of the \textit{if} statement all the way and hence:
+\end{itemize}
+
+\begin{align}
+E[ R_T | G ] &=  E \big[ \mu_1 T - \sum_{i=1}^T \mu_{i_t} \big]
+\nonumber \\
+&= E \big[ \mu_1 T - \sum_{i=1, \text{ odd} }^T \mu_{i_t} - \sum_{i=1, \text{ even} }^T \mu_{i_t}\big]
+\nonumber \\
+&= E \big[\mu_1 T - \frac{T}{2} \mu_1 - \frac{T}{2} \mu_2 \big]
+\nonumber \\
+&= \frac{T}{2} (\mu_1 - \mu_2)
+\end{align}
+
+By definition, $\Pr(G) \leq 1$, so we're done with the first part of equation (5).
+
+\begin{itemize}
+\item
+\underline{Assuming $F$ holds true}, then the algorithm runs given the first hypothesis of the \textit{if} statement all the way until a value $t = s$. And hence:
+\end{itemize}
+
+\begin{align}
+E [ R_T | F ] &= E \big[ \sum_{i=1}^s (\mu_1 - \mu_{i_t}) + \sum_{i=s+1}^T (\mu_1 - \mu_{i_t}) \big]
+\nonumber \\
+&= E \big[ \mu_1 T - \sum_{i=1, \text{ odd} }^s \mu_{i_t} - \sum_{i=1, \text{ even} }^s \mu_{i_t}\big] + E \big[  \sum_{i=s+1}^T (\mu_1 - \mu_{i_t}) \big]
+\nonumber \\
+&= \frac{s}{2} (\mu_1 - \mu_2) + E \big[  \sum_{i=s+1}^T (\mu_1 - \mu_{i_t}) \big]
+\end{align}
+
+The second term of this expression (eq. (7)) is identical to the second term of expression (1) in problem 1. The result is therefore the same as equation (2), replacing $n$ with $s$:
+
+\begin{align}
+E \big[  \sum_{i=s+1}^T (\mu_1 - \mu_{i_t}) \big] \leq (T - 2s) \exp \big( -s(\mu_1 - \mu_2)^2 \big)
+\nonumber \\
+\rightarrow E [ R_T | F ] \leq \frac{s}{2} (\mu_1 - \mu_2) + (T - 2s) \exp \big( -s(\mu_1 - \mu_2)^2 \big)
+\nonumber
+\end{align}
+
+Once again, considering $s =  \frac{\log(1/\delta)}{(\mu_1 - \mu_2)^2}$ so that $\delta = \exp \big( -s(\mu_1 - \mu_2)^2 \big)$ and $T = 1/ \delta$ 
+
+\begin{align}
+E [ R_T | F ] \leq  \frac{\log(T)}{2(\mu_1 - \mu_2)} + 1 - \frac{2}{T} \frac{\log(T)}{(\mu_1 - \mu_2)^2},
+\nonumber
+\end{align}
+
+which reduces to:
+
+\begin{align}
+E [ R_T | F ] \leq 1 + \frac{\log(T)}{2(\mu_1 - \mu_2)}
+\end{align}
+
+\begin{itemize}
+\item
+Let's now bound $\Pr(F)$.
+\end{itemize}
+
+By definition, $\Pr(\text{event happens at some time t}) \leq \sum_{i=1}^T \Pr(\text{event happens exactly at t})$. Hence:
+
+
+\begin{align}
+\Pr(F) \leq \sum_{i=1}^T \Pr \Big(|\hat{\mu}_i^t - \mu_i | > \sqrt{\frac{2 \log T}{N_i^t}} \Big)
+\nonumber
+\end{align}
+
+to which we can apply Hoeffding's inequality:
+
+\begin{align}
+\Pr(F) &\leq \sum_{i=1}^T 2 \exp \Big( - \frac{2 \big(\sqrt{\frac{\log T}{N_i^t}} \big)^2}{2 T}
+\Big)
+\nonumber \\
+\Pr(F) &\leq \sum_{i=1}^T 2 \exp \big( - \frac{ \log T}{N_i^t T} \big)
+\nonumber
+\end{align}
+
+Plugging back in our equation (5):
+
+\[
+E[R_T] \leq \frac{T}{2} |\mu_1 - \mu_2| + \Big( 1 + \frac{\log(T)}{2(\mu_1 - \mu_2)} \Big) \sum_{i=1}^T 2 \exp \big( - \frac{ \log T}{N_i^t T} \big)
+\]
+
+\end{problem}{}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%
+
+\newpage
+
+\begin{problem}{}
+
+\subsection{}
+
+In this problem, we consider the set $\Omega = \mathbb{R}^d$. Therefore, all the "\textit{min}" functions will be done over the set $\mathbb{R}^d$. Let $\eta > 0$, $R$ a strongly convex function, $l_t$ a sequence of loss functions and $\phi_t$ a sequence of functions defined by:
+
+\[
+\phi_0 = R \text{ and } \phi_{t} = \phi_{t-1} + \eta l_t
+\]
+
+Also, by definition:
+
+\textbf{FTLR}
+\[
+w_{t+1} = \arg \min_w \eta \sum_{s=1}^t l_s(w) + R(w)
+\]
+
+\textbf{OMD}
+\[
+\tilde{w}_{t+1} = \arg \min_w \eta l_t(w) + D_{\phi_{t-1}} (w, \tilde{w}_{t})
+\]
+
+
+We note that: 
+
+\begin{align}
+\phi_t &= \eta l_t + \phi_{t-1}  = \eta l_t + \eta l_{t-1} + \phi_{t-2} = \cdots
+\nonumber \\
+&= \eta l_t + \cdots \eta l_1 + \phi_0
+\nn \\
+\rightarrow \phi_t(w) &= \eta \sum_{s=1}^t l_s(w) + R(w)
+\end{align}
+
+\bigskip
+Assume the sequence of $w_t$ follows the FTLR algorithm and assume the sequence $\tilde{w}_t$ follows the OMD algorithm. We will prove that the sequences exactly match by \underline{induction}.
+
+\begin{itemize}
+\item
+Assume they're initialized accordingly: $w_1 = \tilde{w}_1$.
+\item
+Now assume they match up until the time-step $t$, $w_t = \tilde{w}_t$. We need to show that $w_{t+1} = \tilde{w}_{t+1}$.
+\end{itemize}
+
+Using the Bregman divergence, along with the definition of the $\phi$'s functions, define the:
+
+\begin{align}
+\tilde{w}_{t+1} &= \arg \min_w \eta l_t(w) + \big(\phi_{t-1}(w) - \phi_{t-1}(\tilde{w}_{t}) - \brl \nabla \phi_{t-1}(\tilde{w}_{t}), w - \tilde{w}_{t} \brr  \big)
+\nonumber \\
+&= \arg \min_w \eta l_t(w) + \eta l_{t-1}(w) + \phi_{t-2}(w) 
+\nonumber \\
+&- \phi_{t-1}(\tilde{w}_{t}) - \brl \nabla \phi_{t-1}(\tilde{w}_{t}), w - \tilde{w}_{t} \brr
+\nonumber \\
+&= \arg \min_w \eta l_t(w) + \eta l_{t-1}(w) + \cdots \eta l_1(w)  + \phi_0(w)
+\nonumber \\
+&- \phi_{t-1}(\tilde{w}_{t}) - \brl \nabla \phi_{t-1}(\tilde{w}_{t}), w - \tilde{w}_{t} \brr
+\nonumber \\
+\tilde{w}_{t+1} &= \arg \min_w \eta \sum_{s = 1}^t l_s(w)  + R(w)
+\nonumber \\
+&- \phi_{t-1}(\tilde{w}_{t}) - \brl \nabla \phi_{t-1}(\tilde{w}_{t}), w - \tilde{w}_{t} \brr
+\end{align}
+
+Since the $\phi_{t-1}(\tilde{w}_{t})$ term does not depend on $w$, we can remove it from the $\arg \min$ function. Also from our induction property:
+
+\begin{align}
+\nabla \phi_{t-1}(\tilde{w}_{t}) &= \nabla \phi_{t-1}(w_{t})
+\nn \\
+&= \nabla \Big( \eta \sum_{s=1}^{t-1} l_s(w_{t}) + R(w_{t}) \Big) \big(\text{ from eq. (9)}\big)
+\nn \\
+&= \nabla\Big( \eta \sum_{s=1}^{t-1} l_s(w) + R(w) \Big)|_{w = w_{t}}
+\nn \\
+&= 0 \text{ because $w_t$ is precisely the minimum of the function written here}
+\end{align}
+
+Plugging back in equation (10):
+
+\begin{align}
+\tilde{w}_{t+1} = \arg \min_w \eta \sum_{s = 1}^t l_s(w)  + R(w) = w_{t+1}
+\end{align}
+
+\subsection{}
+
+Consider now that $R(w) = 1/2 ||w||^2$ and that the loss functions are linear in $w$ in that $l_t(w) = \brl \theta_t , w \brr$. We consider the same FTLR algorithm as earlier except now we define the \textbf{OGD}:
+
+\[
+\tilde{w}_{t+1} = \tilde{w}_t - \eta \nabla_{\tilde{w}_t} l_t
+\]
+
+We need to show that the sequences $w_t$ and $\tilde{w}_t$ are the same, assuming they're initialized identically.
+
+\begin{align}
+\tilde{w}_{t+1} &= \tilde{w_t} - \eta \nabla_{\tilde{w}_t} \brl \theta_t , w \brr
+\nn \\
+&= \tilde{w}_t - \eta \theta_t
+\nn \\
+&= \tilde{w}_{t-1} - \eta \theta_{t-1} - \eta \theta_t = \cdots
+\nn \\
+&= \tilde{w}_0 - \eta \sum_{s=1}^t \theta_s
+\end{align}
+
+Meanwhile, define $f(w) = \eta \sum_{s=1}^t  \brl \theta_s , w \brr + \frac{1}{2} ||w||^2$. We note that $w_{t+1} = \arg \min_w f(w)$. By definition:
+
+\begin{align}
+\nabla(f(w)) &= \eta \sum_{s=1}^t \theta_s + w
+\nn
+\end{align}
+
+And:
+\begin{align}
+\arg \min_w f(w) &\iff \nabla(f(w)) = 0
+\nn \\
+&\iff w = -\eta \sum_{s=1}^t \theta_s
+\nn
+\end{align}
+
+Therefore:
+
+\begin{align}
+w_{t+1} = -\eta \sum_{s=1}^t \theta_s
+\end{align}
+
+Equations (13) and (14) are the same, up to the initialization term, hence the two algorithms generate the same sequence.
+
+\end{problem}{}
+
+%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%
+
+\newpage
+
+\begin{problem}{}
+
+Let $S$ a set of real numbers of size $k$: $S(k) = \{x_1, x_2, ... x_k\}$. And let $\tilde{S}$ be the union of $k$-intervals in $\mathbb{R}$. One way to write $\tilde{S}$ is as follow:
+
+\[
+\exists \{\tilde{x}_1, ... \tilde{x}_{2k} \} \: s.t. \: \tilde{S}(k) = [\tilde{x}_1, \tilde{x}_2] \cup ... \cup [\tilde{x}_{2k-1}, \tilde{x}_{2k}]
+\]
+
+Let $L$ be the binary labels of $S$, that is $L = \{l_1, \cdots, l_k \}$ with $l_i = 0 \text{ or } 1$. Throughout this problem, we will mention the "label of point $x_i \in S$" as $l_i$ for all $i \in = [k]$. 
+Also, let $H$ be the hypothesis class of $L$, that is the set of all $h$ such that:
+
+\[
+h(x, \tilde{x}_1, ..., \tilde{x}_{2k}) = 
+\begin{cases}
+1 \text{ if } x \in \tilde{S}(k) \\
+0 \text{ otherwise}
+\end{cases}
+\]
+
+We look to prove that the VC dimension of $k$-intervals is $2k$, that is a) $H$ shatters $S(k)$ but b) does not shatter any set larger in size, e.g. $S(k+1)$.
+
+\subsection{}
+
+It is necessary to understand how $H$ can shatter $S(k)$ by looking at all the combinations possible of intervals: for example if $l_i = 0 \: \forall i \in [k]$, then we pick our $\tilde{x}_i$'s so that none of the $x_i$ ever land in any of the intervals of $\tilde{S}(k)$.
+\bigskip
+
+
+If only one of the label is non-zero, i.e. $\exists i_1 \: s.t. \: l_{i_1} = 1$, then we pick $[\tilde{x}_{i_1} , \tilde{x}_{i_1+1}] = [x_{i_1} - \epsilon_{i_1}, x_{i_1} + \epsilon_{i_1}]$.
+We can do so interchangeably for all $i \in [k]$, but we also can do so if there are more than $1$ non-zero label. In fact, let's say there are $j$ non-zero labels, that is $\exists i_1, \cdots, i_j \: s.t. \: l_{i_m} = 1$, simply by making sure that the points $x_{i_m}$  lands in an interval $[\tilde{x}_{i_m}, \tilde{x}_{i_m + 1}]$.
+\bigskip
+
+This can be done all the way up until we only have non-zero labels, i.e. $l_i = 1 \: \forall i \in [k]$.
+
+\subsection{}
+
+The reason why $H$ cannot shatter a set of size $k+1$ is the following:
+Consider the following binary labels of set the $S(k+1)$, $\{l_1, l_2, l_3,  \cdots, l_k, l_{k+1} \} = \{1, 0, 1, \cdots, 0, 1\}$ (where the 0 and 1 go in alternate). We must find the intervals of $\tilde{S}(2k)$ so that each $x_i \in S(k+1)$ lands in \textbf{only} on of the intervals. But since we only have $k$ intervals at our disposition, it is impossible to shatter all the labels -> one of the points $x_i$ must be left alone.
+
+QED
+
+\end{problem}{}
+
+
+\end{document}

@@ -1,0 +1,773 @@
+\documentclass{article}
+\usepackage[T1]{fontenc}
+\usepackage{amssymb, amsmath, graphicx, subfigure, enumerate}
+\usepackage{amsthm,alltt} 
+\usepackage[margin=1.25in]{geometry} %geometry (sets margin) and other useful packages
+\usepackage{graphicx,ctable,booktabs}
+\usepackage{mathtools}
+\usepackage[boxed]{algorithm2e}
+\usepackage{mathdots}
+\usepackage{fancyhdr} %Fancy-header package to modify header/page numbering
+\usepackage{cleveref}
+
+\setlength{\oddsidemargin}{.25in}
+\setlength{\evensidemargin}{.25in}
+\setlength{\textwidth}{6in}
+\setlength{\topmargin}{-0.4in}
+\setlength{\textheight}{8.5in}
+
+\newcommand{\heading}[6]{
+  \renewcommand{\thepage}{\arabic{page}} % used to be #1-\arabic{page}
+  \noindent
+  \begin{center}
+  \framebox{
+    \vbox{
+      \hbox to 5.78in { \textbf{#2} \hfill #3 }
+      \vspace{4mm}
+      \hbox to 5.78in { {\Large \hfill #6  \hfill} }
+      \vspace{2mm}
+      \hbox to 5.78in { \textit{Instructor: #4 \hfill #5} }
+    }
+  }
+  \end{center}
+  \vspace*{4mm}
+}
+
+%Redefining sections as problems
+\makeatletter
+\newenvironment{problem}{\@startsection
+       {section}
+       {2}
+       {-.2em}
+       {-3.5ex plus -1ex minus -.2ex}
+       {2.3ex plus .2ex}
+       {\pagebreak[3]%forces pagebreak when space is small; use \eject for better results
+       \large\bf\noindent{Problem }
+       }
+       }
+       %{%\vspace{1ex}\begin{center} \rule{0.3\linewidth}{.3pt}\end{center}}
+       %\begin{center}\large\bf \ldots\ldots\ldots\end{center}}
+\makeatother
+
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{claim}[theorem]{Claim}
+\newtheorem{observation}[theorem]{Observation}
+\newtheorem{fact}[theorem]{Fact}
+\newtheorem{assumption}[theorem]{Assumption}
+
+% don't modify this unless you know what you're doing
+\newcommand{\problemset}[3]{\heading{#1}{\classname: Machine Learning Theory}{#2}{Jake Abernethy}{#3}{Problem Set #1}}
+
+
+%%%%%%%% ENTER YOUR INFORMATION HERE %%%%%%%%
+\newcommand{\problemsetnum}{1}            % problem set number
+\newcommand{\duedate}{September 10, 2018} % problem set deadline
+\newcommand{\studentname}{Adrien Saremi}      % name of student (i.e., you)
+\newcommand{\classname}{CS 7545}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\pagestyle{fancy}
+%\addtolength{\headwidth}{\marginparsep} %these change header-rule width
+%\addtolength{\headwidth}{\marginparwidth}
+\lhead{\classname} %Problem \thesection}
+\chead{} 
+\rhead{\thepage} 
+\lfoot{\small\scshape \classname}
+\cfoot{} 
+\rfoot{\footnotesize PS \#\problemsetnum} 
+\renewcommand{\headrulewidth}{.3pt} 
+\renewcommand{\footrulewidth}{.3pt}
+\setlength\voffset{-0.25in}
+\setlength\textheight{648pt}
+
+
+\newcommand{\sit}{\shortintertext}
+\newcommand\deq{\mathrel{\overset{\makebox[0pt]{\mbox{\normalfont\tiny\sffamily def}}}{=}}}
+\newcommand{\ones}{\mathbbm{1}}
+\newcommand{\e}{\vec{e}}
+\newcommand{\tr}{\text{tr}}
+\newcommand{\bs}{\boldsymbol}
+\mathchardef\mhyphen="2D
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\R}{\mathbb{R}}
+
+\newcommand{\vol}{\text{vol}}
+
+\renewcommand{\thesubsection}{\thesection.\alph{subsection}}
+
+
+% auto sized delimiters
+
+\newcommand{\br}[1]{\left[#1\right]}
+\newcommand{\pr}[1]{\left(#1\right)}
+\newcommand{\ceil}[1]{\left\lceil#1\right\rceil}
+\newcommand{\floor}[1]{\left\lfloor#1\right\rfloor}
+\newcommand{\abs}[1]{\left|#1\right|}
+
+%default delimiter for Pr and E
+\DeclarePairedDelimiter{\defaultDelim}{[}{]}
+
+\DeclareMathOperator{\capPr}{Pr}
+\renewcommand{\Pr}[2][]{\capPr_{#1}\defaultDelim*{#2}}
+\DeclareMathOperator{\capE}{E}
+\newcommand{\E}[2][]{\capE_{#1}\defaultDelim*{#2}}
+\DeclareMathOperator{\capVar}{Var}
+\newcommand{\Var}[2][]{\capVar_{#1}\defaultDelim*{#2}}
+
+
+
+
+
+
+
+
+
+
+%\DeclareMathOperator*{}{} puts subscript below
+
+
+
+\renewcommand{\leq}{\leqslant}
+\renewcommand{\geq}{\geqslant}
+\setlength\parindent{0pt}
+\newcommand{\nn}{\nonumber}
+\def\R{\mathbb{R}}
+
+\newcommand\undersign[2]{\mathrel{\mathop{#2}\limits_{#1}}}
+
+
+
+\newcommand {\norma}[1] {||#1||_{1}}
+\newcommand {\normadef}[3][i] {\sum_{#1 = 1}^{#2} |#3_{#1}|}
+
+\newcommand {\normb}[1] {||#1||_{2}}
+\newcommand {\normbdef}[3][i] {\sqrt{\sum_{#1 = 1}^{#2} #3_{#1}^2}}
+\newcommand {\normbdefs}[3][i] {\sum_{#1 = 1}^{#2} #3_{#1}^2}
+
+\newcommand {\normi}[1] {||#1||_{\infty}}
+\newcommand {\normidef}[2][i] {\max_{#1} |#2_#1|}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+\problemset{\problemsetnum}{\duedate}{\studentname}
+
+\textit{This work has been done in collaboration with \underline{Bhavesh Khamesra} and \underline{Varun Gupta}}
+
+\begin{problem}{}
+
+Throughout this problem, for each question, we will mostly prove each inequality one after the other:
+
+\subsection{}
+1) Let's prove that $\normb{x} \leqslant \norma{x}$:
+
+\begin{align}
+\norma{x}^2 = \Big( \normadef{N}{x} \Big)^2 \geq \normadef{N}{x}^2 = \normb{x}^2
+\end{align}
+
+because $\Big( \normadef{N}{x} \Big)^2$ includes cross-product terms that will all be positive since $\forall i \, |x_i| > 0$.
+
+\medskip
+2) Let's prove that $\norma{x} \leq \sqrt{N} \normb{x}$ using Cauchy-Schwarz inequality. \\
+Set $x' = (|x_1|,... , |x_N|) \text{ and } y = (1,... , 1)$. Note that $\normb{x'} = \normb{x}$. Then
+
+\begin{align}
+x'^T \cdot y = \norma{x} \leq \normb{x'} \normb{y} =  \normb{x} \sqrt{\sum_{i=1}^N 1^2} = \sqrt{N} \normb{x} \text{ QED.}
+\end{align}
+
+\subsection{}
+
+1) Let $\normi{x} = |x_j|$, that we'll use through the rest of the problem. Then:
+
+\begin{align}
+\normi{x}^2 = x_j^2 \leq x_j^2 + \sum_{i \neq j}^N x_i^2 = \normb{x}^2 \nn \\
+\implies \normi{x} \leq \normb{x}
+\end{align}
+
+\medskip
+2) Since $\forall i, \, |x_i| \leq |x_j|$:
+
+\begin{align}
+\forall i, \enspace x_i^2 \leq x_j ^2 \nn \\
+\implies \sum_{i=1}^N x_i^2 \leq \sum_{i=1}^N x_j^2 = N \normi{x}^2 \nn \\
+\implies \normb{x}^2 \leq N \normi{x}^2 \nn \\
+\implies \normb{x} \leq \sqrt{N} \normi{x}
+\end{align}
+
+\subsection{}
+
+1) Since $\normi{x} = |x_j|$ and for all $i \neq j, |x_i| \geq 0$, then:
+
+\begin{align}
+|x_j| \leq |x_j| + \sum_{i \neq j}^N |x_j| = \norma{x} \nn \\
+\implies \normi{x} \leq \norma{x}
+\end{align}
+
+\medskip
+2) Since $\forall i \,  |x_i| \leq |x_j|$, then:
+
+\begin{align}
+\normadef{N}{x} \leq \sum_{i = 1}^N |x_j| = N |x_j| \nn \\
+\implies \norma{x} \leq N \normi{x}
+\end{align}
+
+
+\subsection{}
+Since $\forall i, \, |x_i| \leq |x_j|$ and assuming $p > 1$:
+
+\begin{align}
+|x_i|^p \leq |x_j|^p \nn \\
+\implies \sum_{i=1}^N |x_i|^p \leq \sum_{i=1}^N |x_j|^p = N |x_j|^p \nn \\
+\implies ||x||_p^p \leq N \normi{x}^p \nn \\
+\implies ||x||_p \leq N^{1/p} \normi{x}
+\end{align}
+
+\subsection{}
+
+We need to show that $\sum_{i=1}^N |x_i|^p \to |x_j|^p$, as $p \to \infty$. Set $p > 1$:
+
+\begin{align}
+\frac{1}{|x_j|^p} \sum_{i = 1}^N |x_i|^p = \frac{1}{|x_j|^p} \Big(|x_j|^p +  \sum_{i \neq j}^N |x_i|^p \Big) = 1 + \sum_{i \neq j}^N \abs{\frac{x_i}{x_j}}^p \nn
+\end{align}
+
+Since for $i \neq j, \abs{\frac{x_i}{x_j}} < 1: \abs{\frac{x_i}{x_j}}^p \to 0$ as $p \to \infty$. Therefore:
+
+\begin{align}
+\frac{1}{|x_j|^p} \sum_{i = 1}^N |x_i|^p \to 1 + \sum_{i \neq j}^N 0 = 1 \text{ as } p \to \infty, \nn \\
+\implies \lim_{p \to \infty} \sum_{i = 1}^N |x_i|^p = |x_j|^p \nn \\
+\implies \lim_{p \to \infty} ||x||_p = \normi{x}
+\end{align}
+
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%
+
+
+\newpage
+
+\begin{problem}{}
+
+\subsection{}
+Let $q >1$. The norm $||\cdot||_q$ has dual $||\cdot||_r$, with $1/q + 1/r = 1 \implies r = \frac{q}{q-1}$. Let $p$ a vector of $\Delta_N$, defined as:
+
+$$
+p = (p_1, ..., p_N) \text{ with } \sum_{i=1}^N p_i = 1
+$$.
+
+Define $x, y$ two vectors of $\mathbb{R}^N$ such as:
+
+$$
+x =  \begin{pmatrix} 
+\Big( \frac{1}{p_1} \Big) ^{\frac{q-1}{q}} \\
+\vdots \\
+\Big( \frac{1}{p_N} \Big) ^{\frac{q-1}{q}} \\
+\end{pmatrix} 
+\text{ and }
+y =  \begin{pmatrix} 
+p_1^{\frac{q-1}{q}} \\
+\vdots \\
+p_N^{\frac{q-1}{q}} \\
+\end{pmatrix} 
+$$
+
+Using Holder's inequality with respect to norms $q$ and $q/(q-1)$:
+
+\begin{align}
+x^T \cdot y \leq ||x||_q \, ||y||_{\frac{q}{q-1}} \nn \\
+%
+\implies \sum_{i = 1}^N 1^{\frac{q}{q-1}} \leq 
+\bigg( \sum_{i=1}^N \Big( \frac{1}{p_i} \Big) ^{\frac{q-1}{q} \times q}   \bigg) ^{\frac{1}{q}} 
+\bigg( \sum_{i=1}^N p_i^{\frac{q-1}{q} \times \frac{q}{q-1}}   \bigg) ^{\frac{q-1}{q}} \nn \\
+%
+\text{raising to power of } q \implies N^q \leq \bigg( \sum_{i=1}^N \frac{1}{p_i^{q-1}} \bigg) \bigg( \sum_{i=1}^N p_i \bigg)^{q-1} \nn \\
+%
+\text{since } p \in \Delta_N \implies N^q \leq \sum_{i=1}^N \frac{1}{p_i^{q-1}}
+\end{align}
+
+\subsection{}
+
+\begin{align}
+\sum_{i=1}^N \Big(p_i + \frac{1}{p_i} \Big)^2 = 
+\sum_{i=1}^N \Big(p_i^2 + 2 + \frac{1}{p_i^2} \Big) = 
+\sum_{i=1}^N \frac{1}{p_i^2} + \sum_{i=1}^N p_i^2 + 2N \nn
+\end{align}
+
+Using 2a) with $q=3$: $$\sum_{i=1}^N \frac{1}{p_i^2} \geq N^3$$
+Using the second inequality squared of 1a): $$N \sum_{i=1}^N p_i^2 = N ||p||_2^2 \geq ||p||_1^2 = 1 \implies \sum_{i=1}^N p_i^2 \geq 1/N$$
+
+Therefore:
+\begin{align}
+\sum_{i=1}^N \Big(p_i + \frac{1}{p_i} \Big)^2 \geq N^3 + \frac{1}{N} + 2N
+\end{align}
+
+\end{problem}
+
+%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%
+
+\newpage
+
+
+
+\begin{problem}{}
+
+\textit{Note: Throughout this problem $||.||$ refers to the 2-norm $||.||_2$} \\
+Let $x \in \R^d$ and a convexe set $K \subseteq \mathbb{R}^d$. Let's define $x_0 = \Pi_K(x)$ so that
+
+$$
+\forall x' \in K, \; ||x-x_0|| \leq ||x - x'||
+$$
+
+\subsection{}
+
+We need to show $x_0$ exists and is unique
+
+1) If $x \in K$, clearly $x_0 = x$ QED.
+
+2) If not, let's have the function defined by $f_x(x') = ||x - x'||^2 = \sum (x_i - x'_i)^2$. Clearly, $f$ is quadratic in all $x'_i$ and hence admits a minimum: \underline{existence} proven. Now onto \underline{uniqueness}.
+
+Let $x_1, x_2 \in K$ be two projections of $x$ onto $K$. That is $\forall x' \in K$:
+
+\begin{align}
+||x - x_1|| \leq ||x - x'|| \nn \\ 
+||x - x_2|| \leq ||x - x'||, \nn
+\end{align}
+
+which implies $||x - x_1|| = ||x - x_2|| = d$ since $x_1, x_2 \in K$. Since $K$ is convex, $\forall t \in [0,1] \; t x_1 + (1-t) x_2 \in K$. Then $x_3 = \frac{x_1 + x_2}{2} \in K$ and:
+
+\begin{align}
+||x - x_3||^2 &=  ||\frac{1}{2} (x-x_1) + \frac{1}{2} (x-x_2)||^2 \nn \\
+\label{eq3a0}
+&= \frac{1}{4} ||(x - x_1) + (x - x_2)||^2 
+\end{align}
+
+We notice that:
+
+\begin{align}
+\label{eq1}
+||(x-x_1) + (x-x_2)||^2 = ||x-x_1||^2 + ||x-x_2||^2 + 2(x-x_1)^T \cdot (x-x_2) \\
+\label{eq2}
+||x_2 - x_1||^2 = ||(x-x_1) - (x-x_2)||^2 = ||x-x_1||^2 + ||x-x_2||^2 - 2(x-x_1)^T \cdot (x-x_2) \\
+\implies (\ref{eq1}) + (\ref{eq2}): ||(x-x_1) + (x-x_2)||^2 + ||x_2 - x_1||^2 = 2 ||x-x_1||^2 + 2 ||x-x_2||^2 \nn
+\end{align}
+
+Plugged back in (\ref{eq3a0}), we find that:
+
+\begin{align}
+||x - x_3||^2 &= \frac{1}{2} ||x-x_1||^2 + \frac{1}{2} ||x-x_2||^2 - \frac{1}{4}||x_2 - x_1||^2 \nn \\
+&= d^2 - \frac{1}{4} ||x_2 - x_1||^2 \nn \\
+\implies \frac{1}{4} ||x_2 - x_1||^2 &= d^2 - ||x - x_3||^2 \leq 0 \nn
+\end{align}
+by definition of $d$. Hence:
+
+\begin{align}
+||x_2 - x_1|| = 0 \implies x_1 = x_2 \text{  QED}
+\end{align}
+
+\subsection{}
+
+\subsection{}
+
+$$
+K = \text{ unit hyperdisc } = \{x: ||x|| \leq 1\}
+$$
+
+1) Let's show that $K$ is convex: Take $x_1, x_2 \in K \text{ and } t \in [0,1]$, then:
+
+\begin{align}
+|| t x_1 + (1-t) x_2 || &\leq ||t x_1|| + ||(1-t) x_2|| = t ||x_1|| + (1-t)||x_2|| \nn \\
+&\leq t + (1-t) = 1 \text{ QED} \nn
+\end{align}
+ 
+So $(t x_1 + (1-t) x_2) \in K$, so $K$ is convexe.
+
+\def\nx{\frac{x}{||x||}}
+
+2) Let $x \notin K$. Since we know the projection is unique from 3a, and since it is obvious that $x/||x|| \in K$, we just need to show that $x/||x||$ is $\min_{y \in K} ||x - y||$. Let $y \in K$. We note that:
+
+\begin{align}
+\label{eq33c1}
+||x - y||^2 = ||x||^2 + ||y||^2 - 2 x^T \cdot y \\
+\label{eq33c2}
+||x - \nx||^2 = ||x||^2 + 1 - 2 x^T \cdot \nx = ||x||^2 + 1 - 2 ||x|| \\
+(\ref{eq33c1}) - (\ref{eq33c2}) \implies ||x-y||^2 - ||x - \nx||^2 = ||y||^2 - 1 + 2 ||x|| - 2 y^T x \nn
+\end{align}
+
+Using that $y^T x \leq ||x|| ||y||$:
+
+\begin{align}
+||x-y||^2 - ||x - \nx||^2 &\geq ||y||^2 - 1 + 2||x|| - 2 ||x|| ||y||  \nn \\
+&= ||y||^2 - 1 + 2||x|| - 2 ||x|| ||y|| + \big(||x||^2 - ||x||^2 \big) \nn \\
+&=\big(||x|| - ||y| \big)^2 - \big(||x|| - 1 \big)^2 \nn
+\end{align}
+
+But since:
+
+\begin{align}
+-||y|| &\geq -1 \nn \\
+\implies \big(||x|| - ||y| \big)^2 &\geq \big(||x|| - 1 \big)^2 \nn
+\end{align}
+
+Therefore 
+\begin{align}
+|x-y||^2 - ||x - \nx||^2 &\geq 0 \nn \\
+\implies |x-y|| \geq ||x - \nx|| \text{ QED}
+\end{align}
+
+\end{problem}
+
+%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%
+
+\newpage
+
+\begin{problem}{}
+
+\subsection{}
+
+Let $g$ be the conjugate of $f$ and $\alpha \geq 0$. Define $f_\alpha = \alpha f$ and $f_\alpha^*$ be its conjugate, then $\forall \theta \in \R$:
+
+\begin{align}
+f_\alpha^* (\theta) &= \sup_{x \in \R} x \theta - \alpha f(x) \nn \\
+&= \sup_{x \in \R} \alpha \big(x \frac{\theta}{\alpha} - f(x) \big) \nn \\
+&= \alpha \bigg( \sup_{x \in \R} \big(x \frac{\theta}{\alpha} - f(x) \big) \bigg) \text{ since $\alpha \geq 0$} \nn \\ 
+f_\alpha^* (\theta) &= \alpha \, g(\frac{\theta}{\alpha}) \text{ by definition of $g$}
+\end{align}
+
+\subsection{}
+
+Let $f$ defined by $f(x) = \sqrt{1+x^2}$ and denote $f^*$ its conjugate. By definition 
+$$
+f^*(\theta) = \sup_{x \in \R} x \theta - \sqrt{1+x^2}
+$$ 
+
+Let $\theta \in \R$: $\forall x \in \R, \, g(x) = x \theta - \sqrt{1+x^2}$. We notice that for large values of $|x|$:
+
+
+
+\begin{align}
+\label{eq4b}
+g(x) = x \theta - |x|
+\begin{cases}
+\undersign{x \to -\infty}{\sim} x (\theta + 1)\\
+\undersign{x \to +\infty}{\sim} x (\theta -1)
+\end{cases} \\
+\text{We notice that: }
+\begin{cases}
+\text{if } \theta < -1, \lim\limits_{x \to -\infty} g(x) = +\infty \\
+\text{if } \theta > 1, \lim\limits_{x \to +\infty} g(x) = +\infty \\
+\end{cases} \nn
+\end{align}
+
+In other words, our study to find $f^*(\theta)$ can only be done for $-1 \leq \theta \leq 1$. Also, note from (\ref{eq4b}) that:
+
+\begin{align}
+\text{if } \theta = -1, \sup_{x \in \R} g(x) = 0 \nn \\
+\text{if } \theta = 1, \sup_{x \in \R} g(x) = 0 \nn
+\end{align}
+
+So for $-1 < \theta < 1$, let's find that supremum of $g(x)$ by setting the derivative to zero:
+
+\begin{align}
+g'(x) = \theta - \frac{x}{\sqrt{1+x^2}} = 0 \nn \\
+\implies \theta^2 = \frac{x^2}{1+x^2} \nn \\
+\implies \frac{1}{\theta^2} = \frac{1}{x^2} + 1 \nn \\
+\implies x^2 = \frac{\theta^2}{1 - \theta^2} \text{ (btw, a real number well defined)} \nn \\
+\implies
+\begin{cases} 
+x_1 = +\sqrt{\frac{\theta^2}{1 - \theta^2}} \\
+x_2 = -\sqrt{\frac{\theta^2}{1 - \theta^2}}
+\end{cases} \nn
+\end{align}
+
+After doing further analysis, we find that only one of these two solutions works:
+
+\begin{align}
+\text{if } \theta < 0, x = -\sqrt{\frac{\theta^2}{1 - \theta^2}} \nn  \\
+\text{if } \theta \geq 0, x = +\sqrt{\frac{\theta^2}{1 - \theta^2}} \nn \\
+\implies \text{if } -1 < \theta < 1: x = \frac{|\theta|}{\sqrt{1 - \theta^2}} \nn
+\end{align}
+
+In other words:
+
+\begin{align}
+f^*(\theta) = 
+\begin{cases}
+\frac{|\theta|}{\sqrt{1 - \theta^2}} \theta - \sqrt{1+ \frac{\theta^2}{1 - \theta^2}} \text{ if $-1 < \theta < 1$} \\
+0 \text{ if $\theta = \pm 1$} \\
+\text{\textbf{undefined} elsewhere}
+\end{cases}
+\end{align}
+
+
+\end{problem}{}
+
+%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%
+
+\newpage
+
+\begin{problem}{}
+
+\subsection{}
+
+\subsection{}
+We have $m$ coins and $n$ trials. Let $m$ be the "special coin." Define the random variable:
+
+\begin{align}
+X_{i,j} =
+\begin{cases}
+1 \text{ if head on } i^{th} \text{ coin } j^{th} \text{ toss }\\
+0 \text{ otherwise}
+\end{cases} \nn
+\end{align}
+
+By definition:
+\begin{align}
+P(X_{i,j} = 1) = 
+\begin{cases}
+\frac{1}{2} \text{ if $i < m$}\\
+\frac{1}{2} + \rho \text{ if $i = m$}
+\end{cases} \nn
+\\
+P(X_{i,j} = 0) = 
+\begin{cases}
+\frac{1}{2} \text{ if $i < m$}\\
+\frac{1}{2} - \rho \text{ if $i = m$}
+\end{cases} \nn
+\end{align}
+
+Define $H_i = \sum_{j=1}^n X_{i,j}$
+We look to find a lower bound $P(H_m > H_1, ..., H_m > H_{m-1})$:
+
+\begin{align}
+P(H_m > H_1, ..., H_m > H_{m-1}) = 1 - P \big( \bigcup_{i=1}^{m-1} H_i \geq H_m \big) \label{eq5a1}
+\end{align}
+
+But by Boole's Inequality:
+
+\begin{align}
+P \big( \bigcup_{i=1}^{m-1} H_i \geq H_m \big) &\leq \sum_{i=1}^{m-1} P(H_i \geq H_m) \nn \\
+&= (m-1) P(H_i \geq H_m) \label{eq5a2}
+\end{align} 
+
+because the tosses are i.i.d. and where $P(H_i \geq H_m)$ is the probability that a coin $i$ has more heads than the coin $m$. Let $1 \leq i \leq m-1$:
+
+\begin{align}
+P(H_i \geq H_m) &= P \big(\sum_{j=1}^n X_{i,j} - X_{m,j} \geq 0 \big) \nn \\
+&= P \bigg(\sum_{j=1}^n \big((X_{i,j} - \frac{1}{2}) - (X_{m,j} - \frac{1}{2} + \rho) \big)  \geq -\frac{n}{2} + \frac{n}{2} + n\rho \bigg) \nn \\
+&= P \bigg(\sum_{j=1}^n \big((X_{i,j} - \frac{1}{2}) - (X_{m,j} - \frac{1}{2} + \rho) \big)  \geq n\rho \bigg) \nn
+\end{align}
+
+Given that the RV defined on the left has $0$ expectation, i.e. $\mathbb{E} [(X_{i,j} - \frac{1}{2}) - (X_{m,j} - \frac{1}{2} + \rho)] = 0$, then we can use Hoeffding inequality. Let's note that RV in question is bounded by $a_i = -1 + \rho$ and $b_i = 1 + \rho$ and so $(b_i - a_i)^2 = 2^2 = 4$:
+
+\begin{align}
+P(H_i \geq H_m) \leq \exp(\frac{-2(n\rho)^2}{4n}) = \exp(-\frac{n\rho^2}{2}) \nn
+\end{align}
+
+Plugging back in (\ref{eq5a2}):
+\begin{align}
+P \big( \bigcup_{i=1}^{m-1} H_i \geq H_m \big) &\leq (m-1) \exp(-\frac{n\rho^2}{2}) \nn
+\end{align}
+
+and plugging in (\ref{eq5a1}):
+
+\begin{align}
+P(H_m > H_1, ..., H_m > H_{m-1}) \geq 1 - (m-1) \exp(-\frac{n\rho^2}{2})
+\end{align}
+
+\subsection{}
+Considering the question, we set the lower bound found in the previous question to be:
+
+\begin{align}
+1 - (m-1) \exp(-\frac{n\rho^2}{2}) &= 1 - \delta \nn \\
+\implies \frac{\delta}{m-1} &= \exp(-\frac{n\rho^2}{2}) \nn \\
+\implies n &= - \frac{2}{\rho^2} \log \bigg( \frac{\delta}{m-1} \bigg)
+\end{align}
+
+\end{problem}{}
+
+%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%
+
+\newpage
+
+\begin{problem}{}
+
+\subsection{}
+
+Let $f$ defined on $\Delta_n$ such as $f(x) = \sum_{i=1}^n x_i \log x_i$. Let's also define $g$ on $\R^n$ such as $g(\theta) = \log \bigg( \sum_{i=1}^n \exp(\theta_i) \bigg)$. Let's prove that $f$ is the conjugate of $g$, that is $f = g^*$. Define the function $h$ as follow:
+
+\begin{align}
+\label{eq66a}
+g^*(x) = \sup_{\theta \in \R^n} x^T \cdot \theta - g(\theta) = \sup_{\theta \in \R^n} h(\theta)
+\end{align}
+
+And set the gradient of $h$ equal to zero:
+
+\begin{align}
+\nabla h(\theta) = x - \nabla g(\theta) = 0 \nn \\
+\implies \forall i, \: x_i = \frac{1}{\sum_{j=1}^n \exp(\theta_j)} \exp(\theta_i) \nn \\
+\implies \exp(\theta_i) = x_i \, \sum_{j=1}^n \exp(\theta_j) \label{eq66a2} \\
+\text{ summing over all $i$'s }\implies \sum_{i=1}^n \exp(\theta_i) = \bigg( \sum_{i=1}^n x_i \bigg) \bigg( \sum_{j=1}^n \exp(\theta_j) \bigg) \nn
+\end{align}
+
+which btw means the solution $x = (x_1, ..., x_n)$ must be in $\Delta_n$: i.e. $\sum x_i = 1$. Also from (\ref{eq66a2}):
+
+$$
+\implies \ \theta_i = \log(x_i) + \log \bigg( \sum_{j=1}^n \exp(\theta_j) \bigg)
+$$
+
+Plugging back in (\ref{eq66a}):
+
+\begin{align}
+g^*(x) &= \sum_{i=1}^n \Bigg(x_i \bigg( \log(x_i) + \log \big( \sum_{j=1}^n \exp(\theta_j) \big) \bigg) \Bigg) 
+- \log \bigg( \sum_{i=1}^n \exp(\theta_i) \bigg) \nn \\
+&= \sum_{i=1}^n x_i \log(x_i) + \log \big( \sum_{j=1}^n \exp(\theta_j) \big) \big( \sum_{i=1}^n x_i \big) - \log \bigg( \sum_{i=1}^n \exp(\theta_i) \bigg) \nn \\
+&\undersign{x \in \Delta_n}{=} \sum_{i=1}^n x_i \log(x_i) \nn \\
+&\implies g^*(x) = f(x)
+\end{align}
+
+Also $dom(g^*) = dom(f) = \Delta_n$. Hence $g^* = f$
+
+\subsection{}
+Let $x = (p, 1-p) \in \Delta_2$ and let's compute the Hessian of the f-function at $x$, with $f(x) = x_1 \log x_1 + x_2 \log x_2$:
+
+\begin{align}
+\nabla^2 f (x) = 
+\begin{pmatrix}
+\frac{\partial^2 f}{\partial x_1^2} & \frac{\partial^2 f}{\partial x_1 \partial x_2} \\
+\frac{\partial^2 f}{\partial x_2 \partial x_1 } & \frac{\partial^2 f}{\partial x_2 ^2}
+\end{pmatrix}
+=
+\begin{pmatrix}
+\frac{1}{p} & 0 \\
+0 & \frac{1}{1-p}
+\end{pmatrix} \nn
+\end{align}
+
+We need to show that $\nabla^2 f(x) \succeq I_2$. For any $y = (q, 1-q)$ we have:
+
+\begin{align}
+y^T (\nabla^2 f(x) - I_2)  y &= 
+\begin{pmatrix}
+q &1-q
+\end{pmatrix}
+\begin{pmatrix}
+\frac{1}{p} - 1 & 0 \\
+0 & \frac{1}{1-p} - 1
+\end{pmatrix}
+\begin{pmatrix}
+q \\
+1-q
+\end{pmatrix}
+\nn \\
+&=
+\begin{pmatrix}
+q &1-q
+\end{pmatrix}
+\begin{pmatrix}
+q(\frac{1}{p} - 1) \\
+(1-q)(\frac{1}{1-p} -1)
+\end{pmatrix}
+\nn \\
+&= q^2(\frac{1}{p} - 1) + (1-q)^2(\frac{1}{1-p} -1)
+\end{align}
+
+But $\frac{1}{p} - 1 \geq 0$ and $\frac{1}{1-p} -1 \geq 0$. And since both $q, (1-q)^2 \geq 0$ then:
+
+$$
+y^T (\nabla^2 f(x) - I_2)  y  \geq 0 \text{ QED}
+$$
+
+\end{problem}{}
+
+%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%
+
+\newpage
+
+\newcommand {\gr}[1] {\nabla f(#1)}
+
+\begin{problem}{}
+
+\subsection{}
+
+We recall that the Bregman Divergence is defined as:
+
+$$
+D_f(x,y) = f(x) - f(y) - \langle \nabla f(y), x - y \rangle
+$$
+
+Let $x, y, z \in dom(f)$, then:
+
+\begin{align}
+D_f (x,y) + D_f(y,z) - D_f(x,z) &=  f(x) - f(y) - \gr{y}^T \cdot (x - y) + f(y) - f(z) - \gr{z}^T \cdot (y - z) \nn \\
+&- \big(f(x) - f(z) - \gr{z}^T \cdot (x - z) \big) \nn \\
+&= -\gr{y}^T \cdot x + \gr{y}^T \cdot y - \gr{z}^T \cdot y \nn \\
+&+ \gr{z}^T \cdot z + \gr{z}^T \cdot x - \gr{z}^T \cdot z \nn \\
+&= -\gr{y}^T \cdot (x - y) + \gr{z}^T \cdot (x - y) \nn \\
+D_f (x,y) + D_f(y,z) - D_f(x,z) &= (\gr{y} - \gr{z})^T \cdot (x - y) \text{ QED}
+\end{align}
+
+
+\subsection{}
+Assume $f$ is 1-strongly convex w.r.t to norm $||.||$. Let $||.||_*$ be its dual. By definition:
+
+\begin{align}
+\label{eq7b1}
+D_f(x,y) \geq \frac{1}{2} ||x-y||^2 \\
+\label{eq7b2}
+D_f(y,x) \geq \frac{1}{2} ||y-x||^2 = \frac{1}{2} ||x-y||^2
+\end{align}
+
+Adding those two:
+
+\begin{align}
+(\ref{eq7b1}) + (\ref{eq7b2}) \implies ||x-y||^2 &\leq D_f(x,y) + D_f(y,x) \nn \\
+\text{(using definition of $D_f$) } &= -\gr{y}^T \cdot (x - y) - \gr{x}^T \cdot (y-x) \nn \\
+&= (\gr{x} - \gr{y})^T \cdot (x- y) \nn
+\end{align}
+
+Using Holder's inequality with respect to the norms $||.||$ and $||.||_*$:
+
+$$
+(\gr{x} - \gr{y})^T \cdot (x- y) = (x- y)^T \cdot (\gr{x} - \gr{y}) \leq ||x-y|| \; ||\gr{x} - \gr{y}||_*
+$$
+
+So
+
+\begin{align}
+||x-y||^2 &\leq ||x-y|| \; ||\gr{x} - \gr{y}||_* \nn \\
+\implies ||x-y|| &\leq ||\gr{x} - \gr{y}||_* \text{ QED}
+\end{align}
+
+\end{problem}{}
+
+
+\end{document}

@@ -1,0 +1,285 @@
+%%%%%PLEASE CONSIDER CORRECTIONS AT PLACES INDICATED%%%%%%%%
+\documentclass{article}
+%%%%%Packages Used, add more if necessary%%%%
+\usepackage{amsmath,amsfonts,amssymb,graphicx,fullpage, mathtools}
+\setlength{\topmargin}{-0.6 in}
+\setlength{\textheight}{8.5 in}
+\setlength{\headsep}{0.75 in}
+
+
+
+%%%%% NO NEED TO EDIT THIS PREAMBLE %%%%%%%%
+%%% PREAMBLE %%%
+\newcounter{lecnum}
+\renewcommand{\thepage}{\thelecnum-\arabic{page}}
+\renewcommand{\thesection}{\thelecnum.\arabic{section}}
+\renewcommand{\theequation}{\thelecnum.\arabic{equation}}
+\renewcommand{\thefigure}{\thelecnum.\arabic{figure}}
+\renewcommand{\thetable}{\thelecnum.\arabic{table}}
+\newcommand{\lecture}[4]{
+   \pagestyle{myheadings}
+   \thispagestyle{plain}
+   \newpage
+   \setcounter{lecnum}{#1}
+   \setcounter{page}{1}
+   \noindent
+   \begin{center}
+   \framebox{
+      \vbox{\vspace{2mm}
+    \hbox to 6.28in { {\bf CS 7545: Machine Learning Theory
+		\hfill Fall 2018} }
+       \vspace{4mm}
+       \hbox to 6.28in { {\Large \hfill Lecture #1: #2  \hfill} }
+       \vspace{2mm}
+       \hbox to 6.28in { {\it Lecturer: #3 \hfill Scribes: #4} }
+      \vspace{2mm}}
+   }
+   \end{center}
+   \markboth{Lecture #1: #2}{Lecture #1: #2}
+
+
+   {\bf Disclaimer}: {\it These notes have not been subjected to the
+   usual scrutiny reserved for formal publications.}
+   \vspace*{4mm}
+}
+\renewcommand{\cite}[1]{[#1]}
+\def\beginrefs{\begin{list}
+        {[\arabic{equation}]}{\usecounter{equation}
+         \setlength{\leftmargin}{2.0truecm}\setlength{\labelsep}{0.4truecm}%
+         \setlength{\labelwidth}{1.6truecm}}}
+\def\endrefs{\end{list}}
+\def\bibentry#1{\item[\hbox{[#1]}]}
+
+\newcommand{\challenge}[2]{\noindent \textbf{(Challenge Problem)} \emph{#1}: #2 }
+
+\newcommand{\exercise}[1]{\noindent \textbf{(Exercise)} #1 }
+
+\newcommand{\fig}[3]{
+			\vspace{#2}
+			\begin{center}
+			Figure \thelecnum.#1:~#3
+			\end{center}
+	}
+%%% END_OF_PREAMBLE %%%
+
+
+	
+%%%%You may add more \newtheorem if necessary%%%%%%
+\newtheorem{theorem}{Theorem}[lecnum]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{claim}[theorem]{Claim}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{algorithm}[theorem]{Algorithm}
+\newenvironment{proof}{{\bf Proof:}}{\hfill\rule{2mm}{2mm}}
+
+
+\newcommand{\dom}{\mathrm{dom}}
+
+\newcommand{\norm}[1]{\left\lVert#1\right\rVert}
+%%%% Math Operator %%%
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+%%%% Creating box for writing algorithm %%%%%%%
+%\newenvironment{boxed}[0]
+%    {{\begin{center}
+%    \begin{tabular}{|p{0.9\textwidth}|}
+%    \hline\\
+%    }
+%    {
+%    \\\\\hline
+%    \end{tabular}
+%    \end{center}
+%    }}
+
+\begin{document}
+
+%%%%%CHANGE HERE%%%%%%%
+%%%%%\section{title of the section} similarly with the rest \section{} or \subsection{} or \subsubsection{} etc
+
+
+%%%%%CHANGE HERE%%%%%%%%%
+%%%%%\lecture{the ordinal number of the lecture}{lecture title}{Jacob Abernethy}{scriber's name}%%%%%%%%
+\lecture{12}{Online Convex Optimization (Cont.)}{Jacob Abernethy}{Adrien Saremi and Bhavesh Khamesra}
+
+%\section{Style Guide}
+%\paragraph{Notations}
+%
+%\begin{itemize}
+%  \item Use \verb|\vec{x}| to denote an $n$-dimensional vector $\vec{x}$, and $x_i$ (not boldfaced) to denote its $i$-th coordinate of $\vec{x}$.
+%  \item Use an uppercase letter to denote a matrix: $M$.
+%  \item Use \verb|\top| for transposition: $\vec{x}^\top M \vec{x}$.
+%  \item Define new math operators in the preamble: \verb|\newcommand{\dom}{\mathrm{dom}}| and then use $\dom(f)$.
+%\end{itemize}
+%
+%\paragraph{Styles}
+%
+%\begin{itemize}
+%    \item Please avoid using logic symbols (such as $\forall$, $\iff$, and $\implies$) as a part of your English sentence when you present a definition, statement (claim/proposition/theorem/lemma), or proof. Feel free to use them in the less ``formal'' settings.
+%  \item In a definition block, boldface the concept being defined. \end{itemize}
+%Example:
+%
+%\begin{definition}[strongly convex]
+%A differentiable function $f$ is \textbf{$c$-strongly convex} if for all $\vec{x},\vec{y} \in \dom(f)$, 
+%\[f(\vec{y}) \ge f(\vec{x}) + \nabla f(\vec{x})^T (\vec{y} - \vec{x}) + \frac{c}{2} \|\vec{y} - \vec{x}\|^2.\]
+%\end{definition}
+%%%%%CHANGE HERE%%%%%%%
+%%%%%\section{title of the section} similarly with the rest \section{} or \subsection{} or \subsubsection{} etc
+%%%%%Use itemize to layout bullet points that are not numbered%%%%%
+
+\subsection{Review:}
+In the last class, we saw the general algorithm for an online convex optimization method. 
+\vspace{20pt}
+\hrule
+\vspace{6pt}
+\noindent \textbf{Algorithm 1:} Let $K \subseteq \mathbb{R}^d$ be a convex decision set.\\
+
+\noindent for $t = 1...T$ \\
+\indent \indent Algorithm selects $x_t \in K$ \\
+\indent \indent Nature chooses convex function $f_t: K \to \mathbb{R} $
+\begin{flalign*}
+	\mathrm{Reg_T} \coloneqq \sum_{t=1}^T f_t(x_t)  - \min_{x \in K}\sum_{t=1}^{T}f_t(x) &&
+\end{flalign*}
+\hrule
+\vspace{20pt}
+\noindent \textbf{Examples:}
+\begin{enumerate}
+	\item{Boosting}
+	\item{Statistical Problems: Batch (IID) framework 
+		}
+\end{enumerate}
+\subsection{Batch IID Framework}
+Let us now look at the Batch framework in more detail. Given:
+\begin{itemize}
+	\item{Independent and identically distributed dataset $(x_1, y_1), ..., (x_T, y_T) \in D$ s.t. $x_t \in X$ and $y_t \in Y$. }
+	\item{Hypothesis space $\mathcal{H}$ with functions which map elements of $X$ to $Y$}
+	\item{ Loss Function: $\ell: \mathcal{H} \times X \times Y \to \mathbb{R}$. }
+\end{itemize}
+\textbf{Assumption:} Let $\mathcal{H} = \{ h_\theta: \theta \in \Theta \subseteq \mathbb{R}^d \}$ and  $\ell(h_\theta, (x,y))$ be a convex function\footnote{In realistic scenarios, this may not always be true i.e. $\ell\left(h_\theta, (x,y)\right)$ may not be convex function} in $\theta$. For eg. consider a set of neural networks models forming the hypothesis space $\mathcal{H}$ and $\theta$ can be their parameters like learning rate, number of hidden layers, etc.\\
+
+\noindent \textbf{Objective:} Let $\mathcal{L}(h) = \mathbb{E}_{(x,y) \sim D} \left[ \ell \left(h, (x,y)\right)\right]$. We want to find some $\hat{h}_t$ \footnote{Quantities denoted by $\hat{}$ are functions of empirical data i.e. are an estimate} s.t. $\mathcal{L}(\hat{h}_t) - \min_{h \in \mathcal{H}} \mathcal{L}(h) < \epsilon$ .  The overall quantity on the LHS is called "excess risk``. \\
+
+\noindent \textbf{Classical Algorithm: Empirical Risk Management - }Pick $\hat{h}_T$ by minimizing $h$ over empirical sample i.e. 
+$$\hat{h}_T = \argmin_{h \in \mathcal{H}} \frac{1}{T} \sum_{t=1}^T \ell \left(h, (x,y)\right)$$
+Under previous assumption, we can write an algorithm for which excess risk is less than regret. \\
+
+\noindent \textbf{Alternate Algorithm: Stochastic Online Convex Optimization - }
+\vspace{12pt}
+\hrule
+\vspace{10pt}
+\noindent \textbf{Algorithm 2:}\\
+
+\noindent For t = 1...T:\\
+\indent \indent $\theta_t$ chosen using the online convex optimization algorithm\\
+\indent \indent $(x_t, y_t)$ revealed \\
+\indent \indent $f_t(\theta_t) = l\left( \theta_t, (x_t, y_t)\right)$\\
+
+\noindent Output: $\hat{h} = h_{\frac{1}{T}\sum_{t=1}^T\theta_t}$
+\vspace{12pt}
+\hrule
+\vspace{10pt}
+
+\noindent
+For $\hat{h}$ defined by the output above, we make the following claim:
+\begin{claim}
+	$$\mathcal{L}(\hat{h}) - \min_{h^* \in \mathcal{H}} \mathcal{L}(h^*) \leq \mathbb{E}\left[ \frac{\mathrm{Reg}_T}{T}\right]$$
+\end{claim}
+\begin{proof}
+	Let $\bar{\theta_T} = \frac{1}{T}\sum_{t=1}^T\theta_t$. Then,
+	\begin{align*}
+		\mathcal{L}(\hat{h}) &= \mathcal{L}\left(h_{\frac{1}{T}\sum_{t=1}^T\theta_t} \right) = \mathcal{L}\left(h_{\bar{\theta}_T}\right) \\
+		&=\mathbb{E}_{(x,y) \in D}\left[ \ell\left(h_{\hat{\theta}_T}, (x,y)\right)\right] \\
+		&\leq \frac{1}{T} \sum_{t=1}^T \mathbb{E}_{(x,y)\in D} \left[\ell \left(h_\theta, (x,y)\right)\right] 
+	\end{align*}
+	where we used the Jensen's inequality in the last step. To move forward, notice that $x, \, y$ are IID variables and our algorithm  cannot distinguish between the input data (be it training or testing data). Hence, the expectation would remain unchanged for testing and training datasets. Thus, replacing $(x,y) \to (x_t, y_t)$:
+	\begin{align*}
+		\mathcal{L}\left(\hat{h}\right) \leq \frac{1}{T} \sum_{t=1}^T \mathbb{E}_{(x_t,y_t)\in D} \left[\ell \left(h_{\theta_t}, (x_t,y_t)\right)\right] 
+	\end{align*}
+	Note that loss function is defined as  $f_t(\theta_t) = l\left( \theta_t, (x_t, y_t)\right)$. Substituting in above equation, we get
+	\begin{align*}
+		\mathcal{L}\left(\hat{h}\right) &\leq \frac{1}{T}\mathbb{E}_{(x_t,y_t)\in D}\sum_{t=1}^T \left[f_t \left(\theta_t\right)\right] \\
+		& \leq\frac{1}{T}\mathbb{E}_{(x_t,y_t)\in D}\left[\min_{\theta\in \Theta} \sum_{t=1}^T f_t \left(\theta\right)\right] + \frac{\mathrm{Reg}_T}{T}\\
+		& \leq \frac{1}{T}\min_{\theta\in \Theta}\mathbb{E}_{(x_t,y_t)\in D}\left[ \sum_{t=1}^T \ell \left(h_\theta, x_t, y_t \right) + \mathrm{Reg}_T \right] \\
+	\end{align*}
+	Since $\theta$ is now chosen to the argument where RHS is minimum and again using the fact $(x_t, y_t)$ is IID, 
+	\begin{align}
+		\mathbb{E}\left[\frac{1}{T}\sum_{t=1}^T \ell\left(h_\theta, (x_t, y_t)\right)\right] =  \mathbb{E}\left[ \ell\left(h_\theta, (x, y)\right)\right]
+	\end{align}
+	Subsituting this in RHS of previous equation, we get:
+	\begin{align}
+		\mathcal{L}(\hat{h}) &\leq \min_{\theta \in \Theta}\mathbb{E}_{(x,y) \in D}\left[ \ell\left(h_\theta, (x,y)\right)\right] + \mathbb{E}_{(x_t, y_t)\in D}\left[ \frac{\mathrm{Reg}_T}{T}\right] \\
+		\mathcal{L}(\hat{h}) &\leq \min_{\theta \in \Theta}\mathcal{L}\left(h_\theta\right) + \mathbb{E}_{(x_t, y_t)\in D}\left[ \frac{\mathrm{Reg}_T}{T}\right]
+	\end{align}
+\end{proof}
+\subsection*{Follow the Leader (FTL):}
+\textbf{Recap}: $x_t = \argmin_{x \in K} \sum_{s=1}^{t-1} f_s(x)$ \\
+\begin{claim}
+$$\mathrm{Reg_T(FTL)} \leq \sum_{t=1}^{T} \left(f_t(x_t) - f_t(x_{t+1}) \right)$$
+\end{claim}
+\begin{proof}
+	To prove this, we use the method of induction. Consider the first time iteration:
+	\begin{align*}
+		\mathrm{Reg_T(FTL)} &= f_1(x_1) - f_1(x^*) = f_1(x_1) - \min_{x \in K}\sum_{s=1}^1f_x(x) \\
+		&=f_1(x_1) - f_1(x_2) \text{ QED}
+	\end{align*}
+	Now consider the case of $T>1$ iterations, assuming the claim is true for $T-1$. Then, we have:
+	\begin{align*}
+		\mathrm{Reg_T(FTL)} &= \sum_{t=1}^T f_t(x_t) - \sum_{t=1}^T f_t(x_{T+1}) \\
+		&= \sum_{t=1}^{T-1} \Big(f_t(x_t) - f_t(x_{T+1}) \Big) + f_T(x_T) - f_T(x_{T+1}) 
+	\end{align*}
+	Since $x_t = \argmin_{x \in K}\sum_{s=1}^{t-1}f_s(x)$, this implies $\sum_{t=1}^{T-1}f_t(x_T) \leq \sum_{t=1}^{T-1} f_t(u) \,\,\, \forall u \in K$. Setting $u = x_{T+1}$, we get$\sum_{t=1}^{T-1} f_t(x_T) \leq \sum_{t=1}^{T-1} f_t(x_{T+1})$. Using this relation in above equation, we get
+	\begin{align*}
+		\mathrm{Reg_T(FTL)} &\leq \sum_{t=1}^{T-1}( f_t(x_t) - f_t(x_T)) + f_T(x_T) - f_T(x_{T+1}) \\
+		& \leq \mathrm{Reg_{T-1}(FTL)} + f_t(x_T) - f_t(x_{T+1}) 
+	\end{align*}
+	Using the induction property, 
+	\begin{align*}
+		&\leq \sum_{t=1}^{T-1} \left(f_t(x_t) - f_t(x_{t+1})\right)  + f_T(x_T) - f_T(x_{T+1}) \\
+		&\leq \sum_{t=1}^T \left(f_t(x_t) - f_t(x_{t+1})\right)
+	\end{align*}
+\end{proof}
+
+\subsection*{Gaussian Density Estimation:}
+Let us look at an example of FTL. Consider the following algorithm:
+\vspace{12pt}
+\hrule
+\vspace{10pt}
+\noindent \textbf{Algorithm 3:}\\
+\begin{itemize}
+	\item{ Data $z_t$ are revealed one by one}
+	\item{Algorithm predicts $\mu_t$, the mean of the data}
+	\item{Loss function:$f_t(\mu_t) = \norm{\mu_t - z_t}_2^2$}
+\end{itemize}
+To choose the mean, we use FTL and define mean as $\mu_t = \argmin_{\mu}\sum_{s=1}^{t-1}\frac{1}{2}\norm{\mu - z_s}_2^2$. Using the first derivative test, we can compute the minimum of function on RHS and after little algebraic manipulation, we get
+$\mu_t = \frac{1}{t-1}\sum_{s=1}^{t-1}z_s = \bar{z}_{t-1}$
+\vspace{12pt}
+\hrule
+\vspace{10pt}
+\noindent Let us analyze the performance of this algorithm. We start with the definition of regret function:
+\begin{align*}
+	\mathrm{Reg_T} &\leq \sum_{t=1}^T \left(\norm{\mu_t - z_t}_2^2 - \norm{\mu_{t+1} - z_t}_2^2\right)\\
+	 &\leq \sum_{t=1}^T \left(\norm{\bar{z}_{t-1} - z_t}_2^2 - \norm{\bar{z}_{t} - z_t}_2^2\right)
+\end{align*}
+Let us focus on second term and try to write in is terms of first term. 
+\begin{align*}
+	\bar{z}_t &= \frac{1}{t}\sum_{s=1}^t z_s = \frac{t-1}{t}\bar{z}_{t-1} + \frac{1}{t}z_t \\
+	\implies \bar{z}_t - z_t &= \left(1-\frac{1}{t}\right) \left(\bar{z}_{t-1} - z_t\right)
+\end{align*}
+Substituting this in expression of regret, we get
+\begin{align*}
+	\mathrm{Reg_T} &\leq \sum_{t=1}^T \norm{\bar{z}_{t-1} - z_t}_2^2 - \left(1 - \frac{1}{t}\right)^2 \norm{\bar{z}_{t-1} - z_t}_2^2 
+\end{align*}
+Dropping the $1/t^2$ term:
+\begin{align*}
+	&\leq \sum_{t=1}^T \frac{2}{t} \norm{\bar{z}_{t-1} - z_t}_2^2\\
+	&\leq  8D \left(\sum_{t=1}^T \frac{1}{t}\right) \\
+	&\leq  8D \log{T}
+\end{align*}
+In second last step, we use $\norm{z_t}_2^2 <D$. This result is much better then Online gradient descent whose performance is $O(\sqrt{T})$. This is because the loss function in this case is strongly convex. \\
+
+\noindent \textbf{Fact:}	If $f_t$ is $\alpha_t$-strongly convex, then $$\mathrm{Reg_T(FTL)} \leq O\left(\sum_{t=1}^T \frac{1}{A_{t-1}}\right)$$ where $A_t = \sum_{s=1}^t\alpha_s$. 
+
+	 
+
+\end{document}

@@ -1,0 +1,563 @@
+\documentclass{article}
+\usepackage[T1]{fontenc}
+\usepackage{amssymb, amsmath, graphicx, subfigure, enumerate}
+\usepackage{amsthm,alltt} 
+\usepackage[margin=1.25in]{geometry} %geometry (sets margin) and other useful packages
+\usepackage{graphicx,ctable,booktabs}
+\usepackage{mathtools}
+\usepackage[boxed]{algorithm2e}
+\usepackage{mathdots}
+\usepackage{fancyhdr} %Fancy-header package to modify header/page numbering
+\usepackage{cleveref}
+
+\setlength{\oddsidemargin}{.25in}
+\setlength{\evensidemargin}{.25in}
+\setlength{\textwidth}{6in}
+\setlength{\topmargin}{-0.4in}
+\setlength{\textheight}{8.5in}
+
+\newcommand{\heading}[6]{
+  \renewcommand{\thepage}{\arabic{page}} % used to be #1-\arabic{page}
+  \noindent
+  \begin{center}
+  \framebox{
+    \vbox{
+      \hbox to 5.78in { \textbf{#2} \hfill #3 }
+      \vspace{4mm}
+      \hbox to 5.78in { {\Large \hfill #6  \hfill} }
+      \vspace{2mm}
+      \hbox to 5.78in { \textit{Instructor: #4 \hfill #5} }
+    }
+  }
+  \end{center}
+  \vspace*{4mm}
+}
+
+%Redefining sections as problems
+\makeatletter
+\newenvironment{problem}{\@startsection
+       {section}
+       {2}
+       {-.2em}
+       {-3.5ex plus -1ex minus -.2ex}
+       {2.3ex plus .2ex}
+       {\pagebreak[3]%forces pagebreak when space is small; use \eject for better results
+       \large\bf\noindent{Problem }
+       }
+       }
+       %{%\vspace{1ex}\begin{center} \rule{0.3\linewidth}{.3pt}\end{center}}
+       %\begin{center}\large\bf \ldots\ldots\ldots\end{center}}
+\makeatother
+
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{claim}[theorem]{Claim}
+\newtheorem{observation}[theorem]{Observation}
+\newtheorem{fact}[theorem]{Fact}
+\newtheorem{assumption}[theorem]{Assumption}
+
+% don't modify this unless you know what you're doing
+\newcommand{\problemset}[3]{\heading{#1}{\classname: Machine Learning Theory}{#2}{Jake Abernethy}{#3}{Problem Set #1}}
+
+
+%%%%%%%% ENTER YOUR INFORMATION HERE %%%%%%%%
+\newcommand{\problemsetnum}{5}            % problem set number
+\newcommand{\duedate}{December 2, 2018} % problem set deadline
+\newcommand{\studentname}{Adrien Saremi}      % name of student (i.e., you)
+\newcommand{\classname}{CS 7545}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\pagestyle{fancy}
+%\addtolength{\headwidth}{\marginparsep} %these change header-rule width
+%\addtolength{\headwidth}{\marginparwidth}
+\lhead{\classname} %Problem \thesection}
+\chead{} 
+\rhead{\thepage} 
+\lfoot{\small\scshape \classname}
+\cfoot{} 
+\rfoot{\footnotesize PS \#\problemsetnum} 
+\renewcommand{\headrulewidth}{.3pt} 
+\renewcommand{\footrulewidth}{.3pt}
+\setlength\voffset{-0.25in}
+\setlength\textheight{648pt}
+
+
+\newcommand{\sit}{\shortintertext}
+\newcommand\deq{\mathrel{\overset{\makebox[0pt]{\mbox{\normalfont\tiny\sffamily def}}}{=}}}
+\newcommand{\ones}{\mathbbm{1}}
+\newcommand{\e}{\vec{e}}
+\newcommand{\tr}{\text{tr}}
+\newcommand{\bs}{\boldsymbol}
+\mathchardef\mhyphen="2D
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\R}{\mathbb{R}}
+
+\newcommand{\vol}{\text{vol}}
+
+\renewcommand{\thesubsection}{\thesection.\alph{subsection}}
+
+
+% auto sized delimiters
+
+\newcommand{\br}[1]{\left[#1\right]}
+\newcommand{\pr}[1]{\left(#1\right)}
+\newcommand{\ceil}[1]{\left\lceil#1\right\rceil}
+\newcommand{\floor}[1]{\left\lfloor#1\right\rfloor}
+\newcommand{\abs}[1]{\left|#1\right|}
+
+%default delimiter for Pr and E
+\DeclarePairedDelimiter{\defaultDelim}{[}{]}
+
+\DeclareMathOperator{\capPr}{Pr}
+\renewcommand{\Pr}[2][]{\capPr_{#1}\defaultDelim*{#2}}
+\DeclareMathOperator{\capE}{E}
+\newcommand{\E}[2][]{\capE_{#1}\defaultDelim*{#2}}
+\DeclareMathOperator{\capVar}{Var}
+\newcommand{\Var}[2][]{\capVar_{#1}\defaultDelim*{#2}}
+
+
+
+
+
+
+
+
+
+
+%\DeclareMathOperator*{}{} puts subscript below
+
+\usepackage{dsfont}
+
+\renewcommand{\leq}{\leqslant}
+\renewcommand{\geq}{\geqslant}
+\setlength\parindent{0pt}
+\newcommand{\nn}{\nonumber}
+\def\R{\mathbb{R}}
+
+\newcommand\undersign[2]{\mathrel{\mathop{#2}\limits_{#1}}}
+
+\newcommand {\gr}[1] {\nabla f(#1)}
+
+\def \Pr {\text{Pr}}
+
+\def \brl {\langle}
+\def \brr {\rangle}
+\def \E {\mathbb{E}}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+\problemset{\problemsetnum}{\duedate}{\studentname}
+
+\textit{This work has been done in collaboration with \underline{Bhavesh Khamesra}}
+
+\begin{problem}{}
+
+Let $H$ be a hypothesis set, with finite size $|H| = n$. Let $d = \text{VC-dim}(H)$. By definition, if we let set $S = \{x_1, ..., x_d \}$ and let $F_S(H) =  \big\{ \big( h(x_1), ..., h(x_d) \big) : h \in H \big\}$:
+
+\[
+| \big\{ \big( h(x_1), ..., h(x_d) \big) : h \in H \big\} | = |F_S(H) | = 2^d
+\]
+
+By definition, we know that:
+
+\[
+F_S(H) = \big\{ \big( h_1(x_1), ..., h_1(x_d) \big), \big( h_2(x_1), ..., h_2(x_d) \big), ..., \big( h_n(x_1), ..., h_n(x_d) \big) \big\}
+\]
+
+In the worst case, the elements of $F_S(H)$ never repeat, i.e. $\forall i \neq j \in [n] \: \big( h_i(x_1), ..., h_i(x_d) \big) \neq  \big( h_j(x_1), ..., h_j(x_d) \big)$. But in all cases, the number of elements in $F_S(H)$ is at most the number of elements $H$:
+
+\begin{align}
+|F_S(H)| &\leq n = |H| 
+\nn \\
+\implies 2^d &\leq |H|
+\nn \\
+\implies d &\leq \log_2 (H)
+\nn \\
+\implies \text{VC-dim}(H) &\leq \log_2 (H)
+\end{align}
+
+\end{problem}{}
+
+%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%
+\newpage
+
+
+\begin{problem}{}
+
+\subsection{}
+
+Let $m > 0$, $\alpha \in \mathbb{R}$ and the hypothesis sets $H$. By definition:
+
+\[
+R_m(H) = \underset{S \sim D^m}{\E} \big[ \hat{R_S}(H) \big]
+\]
+
+And by definition, the Empirical Rademacher Complexity is
+
+\[
+\hat{R_S}(H) = \underset{\sigma}{\E} \Big[ \sup_{h \in H} \frac{1}{m} \sum_{i=1}^m \sigma_i h(x_i) \Big]
+\]
+
+Let $h_{max}$ be the hypothesis class for which the $\sup$ argument is reached. Then $\forall h \in H$:
+
+\begin{align}
+\frac{1}{m} \sum_{i=1}^m \sigma_i h(x_i)  \leq \frac{1}{m} \sum_{i=1}^m \sigma_i h_{max}(x_i) 
+\end{align}
+
+\begin{itemize}
+\item
+If $\alpha > 0$, we multiply (2) by $\alpha$ and get:
+\end{itemize}
+
+\begin{align}
+\frac{1}{m} \sum_{i=1}^m \sigma_i \alpha h(x_i)  
+&\leq \frac{1}{m} \sum_{i=1}^m \sigma_i \alpha h_{max}(x_i)
+\nn \\
+&=  \alpha \frac{1}{m} \sum_{i=1}^m \sigma_i h_{max}(x_i) 
+\nn \\
+\implies
+\forall h \in H, \: \frac{1}{m} \sum_{i=1}^m \sigma_i \big(\alpha h \big) (x_i)
+&\leq \alpha \sup_{h \in H} \frac{1}{m} \sum_{i=1}^m \sigma_i h(x_i)
+\nn \\
+\implies
+\sup_{\alpha h \in \alpha H} \frac{1}{m} \sum_{i=1}^m \sigma_i \big(\alpha h \big)(x_i)
+&= \alpha \sup_{h \in H} \frac{1}{m} \sum_{i=1}^m \sigma_i h(x_i)
+\end{align}
+
+Taking the expectation of (3) over the $\sigma$-distribution, we get:
+
+\begin{align}
+\underset{\sigma}{\E} \Big[ \sup_{\alpha h \in \alpha H} \frac{1}{m} \sum_{i=1}^m \sigma_i \big(\alpha h \big)(x_i) \Big]
+&=
+\underset{\sigma}{\E} \Big[ \alpha \sup_{h \in H} \frac{1}{m} \sum_{i=1}^m \sigma_i h(x_i) \Big]
+\nn \\
+&= \alpha  \underset{\sigma}{\E} \Big[ \sup_{h \in H} \frac{1}{m} \sum_{i=1}^m \sigma_i h(x_i) \Big]
+\nn \\
+\implies \hat{R_S}(\alpha H) &= \alpha \hat{R_S}(H)
+\nn
+\end{align}
+
+and since $\alpha = |\alpha|$, by taking the expectation over $S$, we get:
+
+\begin{align}
+R_m(\alpha H) = |\alpha| R_m(H)
+\end{align}
+
+\begin{itemize}
+\item
+If $\alpha = 0$, the result is trivial, i.e. we get $R_m( \alpha H ) = 0 = \alpha R_m(H)$.
+\item
+Finally, if $\alpha < 0$, as we start from equation (2), this time we have
+\end{itemize}
+
+\begin{align}
+\frac{1}{m} \sum_{i=1}^m \sigma_i \alpha h(x_i)  
+&\geq \alpha \frac{1}{m} \sum_{i=1}^m \sigma_i h_{max}(x_i) 
+\nn \\
+\implies
+- \frac{1}{m} \sum_{i=1}^m \sigma_i \alpha h(x_i)  
+&\leq - \alpha \frac{1}{m} \sum_{i=1}^m \sigma_i h_{max}(x_i) 
+\nn \\
+\implies
+\forall h \in H, \: \frac{1}{m} \sum_{i=1}^m \sigma_i \big(- \alpha h \big) (x_i)
+&\leq (-\alpha) \sup_{h \in H} \frac{1}{m} \sum_{i=1}^m \sigma_i h(x_i)
+\nn \\
+\implies
+\sup_{-\alpha h \in -\alpha H} \frac{1}{m} \sum_{i=1}^m \sigma_i \big(- \alpha h \big)(x_i)
+&= (-\alpha) \sup_{h \in H} \frac{1}{m} \sum_{i=1}^m \sigma_i h(x_i)
+\nn \\
+\implies
+\sup_{\alpha h \in \alpha H} \frac{1}{m} \sum_{i=1}^m \sigma_i \big( \alpha h \big)(x_i)
+&= (-\alpha) \sup_{h \in H} \frac{1}{m} \sum_{i=1}^m \sigma_i h(x_i)
+\nn
+\end{align}
+
+Doing the same process as earlier, we find that:
+
+\[
+\hat{R_S}(\alpha H) = -\alpha \hat{R_S}(H)
+\]
+
+But since here $|\alpha| = -\alpha$, once we take the expectation over $S$, the equation reads:
+
+\begin{align}
+R_m(\alpha H) = |\alpha| R_m( H)
+\end{align}
+
+\subsection{}
+
+This time, let $H, H'$ be two hypothesis sets:
+
+\[
+R_m(H + H') = \underset{S \sim D^m}{\E} \big[ \hat{R_S}(H + H') \big]
+\]
+
+And
+
+\[
+\hat{R_S}(H + H') = \underset{\sigma}{\E} \Big[ \sup_{h + h' \in H + H'} \frac{1}{m} \sum_{i=1}^m \sigma_i \big(h + h' \big) (x_i) \Big]
+\]
+
+Similarly to earlier, define $h_{max}, h_{max}'$ such that $\forall h \in H$ and $\forall h' \in H'$: 
+
+\begin{align}
+\begin{cases}
+\frac{1}{m} \sum_{i=1}^m \sigma_i h(x_i)  \leq \frac{1}{m} \sum_{i=1}^m \sigma_i h_{max}(x_i) \\
+\frac{1}{m} \sum_{i=1}^m \sigma_i h'(x_i)  \leq \frac{1}{m} \sum_{i=1}^m \sigma_i h_{max}'(x_i) 
+\end{cases}
+\nn
+\end{align}
+
+By summing those equations we get:
+
+\begin{align}
+\frac{1}{m} \sum_{i=1}^m \sigma_i \Big( h(x_i) + h'(x_i) \Big) 
+&\leq \frac{1}{m} \sum_{i=1}^m \sigma_i \Big( h_{max}(x_i) + h_{max}'(x_i) \Big)
+\nn \\
+\implies \forall (h, h') \in H \times H', \:
+\frac{1}{m} \sum_{i=1}^m \sigma_i \big(h + h' \big) (x_i) 
+&\leq \frac{1}{m} \sum_{i=1}^m \sigma_i h_{max}(x_i) + \frac{1}{m} \sum_{i=1}^m \sigma_i h_{max}'(x_i)
+\nn \\
+\implies
+\sup_{h + h' \in H + H'} \frac{1}{m} \sum_{i=1}^m \sigma_i \big(h + h' \big)(x_i)
+&= \sup_{h \in H} \frac{1}{m} \sum_{i=1}^m \sigma_i h(x_i) + \sup_{h' \in H'} \frac{1}{m} \sum_{i=1}^m \sigma_i h'(x_i)
+\nn
+\end{align}
+
+Therefore, by taking the expectation value over $\sigma$:
+
+\[
+\hat{R_S}(H + H') = \hat{R_S}(H) + \hat{R_S}(H')
+\]
+
+And:
+
+\begin{align}
+R_m(H + H') = R_m(H) + R_m(H')
+\end{align}
+
+
+\end{problem}{}
+
+%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%
+\newpage
+
+\begin{problem}{}
+Let $S = (x_1, ..., x_m)$, $h$ a hypothesis class and $y$ the vector of of predictors of $h$ over $S$: $\mathbf{y} = (h(x_1), ..., h(x_m))^T$. Let $H = \{h, -h \}$. We know that the Empirical Rademacher Complexity reads as
+
+\begin{align}
+\hat{R_S}(H) &= \underset{\sigma_{1:m}}{\E} \Big[ \sup_{h \in H} \frac{1}{m} \sum_{i = 1}^m \sigma_i h(x_i) \Big]
+\nn \\
+&= \underset{\sigma_{1:m}}{\E} \Big[ \sup_{h \in H} \frac{1}{m} \sum_{i = 1}^m \sigma_i y_i \Big]
+\nn \\
+&= \underset{\sigma_{1:m}}{\E} \big[ \sup_{h \in H} \frac{1}{m} \brl \mathbf{\sigma} \mathbf{y} \brr \big]
+\nn
+\end{align}
+
+Using Cauchy-Schwarz inequality, we know that $\sup_{h \in H} \brl \mathbf{\sigma} \mathbf{y} \brr \leq || \mathbf{\sigma} ||_2 \, \sup_{h \in H} || \mathbf{y} ||_2$, with
+
+\[
+|| \mathbf{\sigma} ||_2 \leq \sqrt{m},
+\]
+
+and with 
+\[
+\sup_{h \in H} || \mathbf{y} ||_2 = || \mathbf{y} ||_2
+\]
+(indeed, $|| \mathbf{y} ||_2$ is constant since the two elements of $H$ are $h$ and its opposite).
+
+\bigskip
+So:
+
+\begin{align}
+\hat{R_S}(H) 
+&\leq \underset{\sigma_{1:m}}{\E} \Big[ \frac{1}{m} \sqrt{m} || \mathbf{y} ||_2 \Big]
+\nn \\
+\implies
+\hat{R_S}(H) &\leq \frac{ || \mathbf{y} ||_2 }{\sqrt{m}}
+\end{align}
+
+
+
+
+\end{problem}{}
+
+
+%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%
+\newpage
+
+\begin{problem}{}
+
+\subsection{}
+
+Let $S$ a data set of size $m$, sorted out in increasing order so that $S = \{x_1, ..., x_m \}$ with $x_1 \leq ...\leq x_m$. We look for an upper bound on 
+
+\[
+\Pi_H(m) = \max_{x_1, ..., x_m} | \{ \big(h(x_1), ..., h(x_m) \big) :  h \in H \}
+\]
+
+Let $h_\gamma \in \{ x \rightarrow \mathbf{1}_{x \leq \gamma} \}$. Depending on the relative position of $\gamma$ in the point distribution $x_1, ..., x_m$, we can generate many different labels: if $\gamma \leq x_1$, then $(h(x_1), ..., h(x_m)) = (0, ..., 0 )$; if $x_1 \leq \gamma \leq x_2$, then $(h(x_1), h(x_2) ..., h(x_m)) = (1, 0, ..., 0 )$.
+
+So on and so forth, we can generate a total of $m+1$ labels corresponding to $\gamma$ being in any of the $m-1$ intervals of $S$ and the $2$ outer semi-open intervals. A similar argument can be done for $h_{\gamma'} \in \{ x \rightarrow \mathbf{1}_{x \geq \gamma'} \}$: we have a total of $m+1$ labels once again.
+
+\bigskip
+
+Since $H$ is the union of these two sets, we can generate a total of $2(m+1)$ labels, except for the fact that the label
+$(h_\gamma(x_1), h_\gamma(x_2), ... , h_\gamma(x_m) ) = (h_{\gamma'}(x_1),  h_{\gamma'}(x_2), ... , h_{\gamma'}(x_m) ) = (0, 0, ..., 0)$
+is redundant in that it can be generated by $\gamma \leq x_1$ OR by $\gamma' \geq x_m$. A similar argument can be made for the label
+$(1, 1, ..., 1)$ and therefore we must subtract $2$ to our total number of labels:
+
+\[
+2(m+1) - 2 = 2m
+\]
+
+Hence:
+
+\[
+\Pi_H(m) = 2m
+\]
+
+and using the corollary of Massart's Lemma, we find:
+
+\begin{align}
+R_m(H) \leq \sqrt{\frac{2 \log \Pi_H(m)}{m}} \leq \sqrt{\frac{2 \log (2m)}{m}}
+\end{align}
+
+\subsection{}
+
+\end{problem}{}
+
+%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%
+\newpage
+
+\begin{problem}{}
+
+In our problem, let $Z$ defined as follow. We look to prove that:
+
+\begin{align}
+Z = \sup_{a \in A} \frac{1}{m} \sum_{i=1}^m \sigma_i a_i
+\nn \\
+\underset{\sigma_{1:m}}{\E} [Z] = O \Big( \sqrt{ \frac{\log m + \log |A|}{m} } \Big)
+\nn
+\end{align}
+
+To start with, we notice that $\forall t \in \mathbb{R}$:
+
+\begin{align}
+\label{eq:zeq}
+\E [Z] = E[Z . \mathbf{1}[Z \leq t] ] + E[Z . \mathbf{1}[Z > t] ]
+\end{align}
+
+\begin{itemize}
+\item
+The first term of Eq.~(\ref{eq:zeq}) can be bounded as follow:
+\end{itemize}
+
+
+\begin{align}
+Z . \mathbf{1}[Z \leq t] &\leq t
+\nn \\
+\implies \underset{\sigma_{1:m}}{\E} \big[ Z . \mathbf{1}[Z \leq t] \big]
+&\leq \underset{\sigma_{1:m}}{\E} [t] = t
+\label{eq:firstterm}
+\end{align}
+
+\begin{itemize}
+\item
+The second term of Eq.~(\ref{eq:zeq}) is a bit trickier. However, we note that since $\sigma_i \in \{-1, 1 \}$ and $-1 \leq a_i \leq 1$ for all $i \in [m]$, we can deduce that $\forall a \in A, \: -1 \leq \frac{1}{m} \sum_{i=1}^m \sigma_i a_i \leq 1$. Also
+\end{itemize}
+
+\begin{align}
+\underset{\sigma_{1:m}}{\E} \big[ Z . \mathbf{1}[Z \geq t] \big]
+&= \underset{\sigma_{1:m}}{\E} \big[\sup_{a \in A} \frac{1}{m} \sum_{i=1}^m \sigma_i a_i  \mathbf{1}[Z \geq t] \big]
+\nn \\
+&\leq \underset{\sigma_{1:m}}{\E} \big[  \sum_{a \in A} \frac{1}{m} \sum_{i=1}^m \sigma_i a_i  \mathbf{1}[Z \geq t] \big]
+\nn \\
+&\leq \underset{\sigma_{1:m}}{\E} \big[  \sum_{a \in A}  \mathbf{1}[Z \geq t]  \big]
+\nn \\
+&= |A| \underset{\sigma_{1:m}}{\E} \big[  \mathbf{1}[Z \geq t] \big]
+\nn \\
+&= |A| \, \Pr( Z > t)
+\nn \\
+&\leq |A| \,  \Pr \Big( \sup_{a \in A} \frac{1}{m} \sum_{i=1}^m \sigma_i a_i > t \Big )
+\nn
+\end{align}
+
+Here, we recognize that we can apply Hoeffding inequality on the R.V. defined by $ \sup_{a \in A} \frac{1}{m} \sum_{i=1}^m \sigma_i a_i$, which is bounded in the interval $[-1, 1]$, which has $m$ terms and centered at $0$:
+
+\begin{align}
+\underset{\sigma_{1:m}}{\E} \big[ Z . \mathbf{1}[Z \geq t] \big]
+\leq |A| \exp \big( \frac{-2 m^2 t^2}{4 m} \big) 
+= |A| \exp \big( \frac{ - m t^2}{2} \big)
+\label{eq:secondterm}
+\end{align}
+
+Plugging inequalities (\ref{eq:firstterm}) and (\ref{eq:secondterm}) back into Eq.~(\ref{eq:zeq}), we find $\forall t \in \mathbb{R}$:
+
+\begin{align}
+\underset{\sigma_{1:m}}{\E} [Z]  \leq t + |A| \exp \big( \frac{ - m t^2}{2} \big)
+\label{eq:answer}
+\end{align}
+
+We can pick any values of $t$ for which this equation holds. Let's try:
+
+\[
+t = \sqrt{\frac{2}{m}} \, \sqrt{ \log \Big ( |A| \frac{\sqrt{m}}{2 \sqrt{\log{m}}} \Big)}
+\]
+
+We note that:
+
+\begin{align}
+|A| exp \big( \frac{ - m t^2}{2} \big) 
+&= |A| \exp \Big(-  \log \big ( |A| \frac{\sqrt{m}}{2 \sqrt{\log{m}}} \big) \Big)
+\nn \\
+&= \frac{|A|}{|A| \frac{\sqrt{m}}{2 \sqrt{\log{m}}}}
+\nn \\
+&= \sqrt{\frac{2}{m}} \sqrt{ \log m}
+\nn
+\end{align}
+
+We also note that we can re-write $t$ as follow:
+
+\begin{align}
+t &= \sqrt{\frac{2}{m}} \, \sqrt{ \log |A| +  \log \Big(\frac{\sqrt{m}}{2 \sqrt{\log{m}}} \Big)}
+\nn \\
+&= \sqrt{\frac{2}{m}} \, \sqrt{ \log |A|} \sqrt{1 + \frac{\log \Big(\frac{\sqrt{m}}{2 \sqrt{\log{m}}} \Big)}{\log |A|} }
+\nn \\
+&\approx \sqrt{\frac{2}{m}} \, \sqrt{ \log |A|}
+\nn
+\end{align}
+
+These two last expressions allow us to simplify Eq.~(\ref{eq:answer}):
+
+\begin{align}
+\underset{\sigma_{1:m}}{\E} [Z] 
+&\leq \sqrt{\frac{2}{m}} \, \sqrt{ \log |A|} + \sqrt{\frac{2}{m}} \sqrt{ \log m}
+\nn \\
+\implies
+\underset{\sigma_{1:m}}{\E} [Z]  &= O \Big( \sqrt{ \frac{\log m + \log |A|}{m} } \Big)
+\nn
+\end{align}
+
+\end{problem}{}
+
+\end{document}
